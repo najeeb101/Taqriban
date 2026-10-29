@@ -31,7 +31,7 @@ export function QuestionTabs({
     total: formatNumber(questions.length, digitStyle),
   });
   return (
-    <ol className={cn('flex items-center gap-4 md:gap-6', className)} role="img" aria-label={label}>
+    <ol className={cn('flex items-center gap-3 min-[360px]:gap-4 md:gap-6', className)} role="img" aria-label={label}>
       {questions.map((q, i) => {
         const answered = revealedIds.includes(q.id);
         const isCurrent = currentIndex === i;

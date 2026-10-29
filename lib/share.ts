@@ -33,5 +33,7 @@ export function shareText(opts: ShareInput): string {
     (better != null && better > 0 ? ` · أفضل من ${localizeDigits(better, style)}% من اللاعبين` : '');
   const rows = opts.rows.map((r) => `${squareFor(r.multiple)} ${ARROW[r.direction]} ${f(r.multiple)}`);
   const streak = opts.streak != null && opts.streak >= 2 ? [streakLine(opts.streak, style)] : [];
-  return [head, line, ...streak, ...rows, opts.url].map((l) => RLM + l).join('\n');
+  // Bare domain («taqriban.vercel.app»): chat apps still link it and show the preview card, without the https:// noise.
+  const link = opts.url.replace(/^https?:\/\//, '').replace(/\/$/, '');
+  return [head, line, ...streak, ...rows, link].map((l) => RLM + l).join('\n');
 }

@@ -80,6 +80,7 @@ export const admin = {
   submissionStatus: { new: 'جديد', reviewing: 'قيد المراجعة', accepted: 'مقبول', rejected: 'مرفوض', scheduled: 'مجدول' },
   submissionsEmpty: 'لا توجد اقتراحات هنا بعد.',
   proposedAnswer: 'الإجابة المقترحة',
+  aiVerdict: { approve: 'الذكاء الاصطناعي: مقبول', reject: 'الذكاء الاصطناعي: مرفوض', unsure: 'الذكاء الاصطناعي: يحتاج رأيك' },
   source: 'المصدر',
   napkin: 'الحساب',
   credit: 'يُنشر باسم',

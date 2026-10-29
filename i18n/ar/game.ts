@@ -66,10 +66,8 @@ export const game = {
 
   // question + input
   guessPlaceholder: 'اكتب تخمينك',
-  guessHint: 'يمكنك كتابة «5 مليون» أو «250 ألف»',
   previewLabel: 'سيتم تسجيل:',
   openCalculator: 'الآلة الحاسبة',
-  oneGuess: 'لديك تخمينة واحدة لكل سؤال',
   locking: 'جارٍ التثبيت…',
   lockedAnnounce: 'تم تثبيت إجابتك',
   unitLabel: 'الوحدة: {u}',

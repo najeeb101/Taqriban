@@ -147,8 +147,18 @@ async function main() {
     return r.data;
   };
 
-  // Phase 1: ensure puzzles exist; move re-dated ones out of the way first (publish_date is unique).
+  // Never overwrite a puzzle the review bot built from player suggestions (Docs/REVIEW_BOT.md).
   const numbers = valid.map(([n]) => n);
+  const pooled = check(
+    await sb.from('question_pool').select('questions!inner(puzzles!inner(number))').eq('status', 'used'),
+    'select pooled puzzles',
+  ) as unknown as { questions: { puzzles: { number: number } } }[];
+  const taken = [...new Set(pooled.map((r) => r.questions.puzzles.number))].filter((n) => numbers.includes(n));
+  if (taken.length) {
+    throw new Error(`puzzle(s) ${taken.join(', ')} were built by the review bot; renumber your files to start after them`);
+  }
+
+  // Phase 1: ensure puzzles exist; move re-dated ones out of the way first (publish_date is unique).
   const existing = check(
     await sb.from('puzzles').select('id,number,publish_date,status').in('number', numbers),
     'select puzzles',

@@ -75,7 +75,9 @@ export function Tabs<V extends string>({
             disabled={item.disabled}
             onClick={() => onChange(item.value)}
             className={cn(
-              'min-h-11 flex-1 rounded-lg px-3 text-[0.9375rem] font-medium whitespace-nowrap transition',
+              // Small phones (320px): tighter padding and labels may wrap, so four tabs still fit the row.
+              'min-h-11 min-w-0 flex-1 rounded-lg px-1.5 text-sm leading-tight font-medium transition',
+              'min-[360px]:px-3 min-[360px]:text-[0.9375rem] min-[360px]:whitespace-nowrap',
               'disabled:opacity-40',
               selected ? 'bg-surface text-ink shadow-card' : 'text-muted hover:text-ink',
             )}

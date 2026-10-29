@@ -6,7 +6,7 @@ import { useId, type Ref } from 'react';
 import { Num } from '@/components/ui/Num';
 import { cn } from '@/components/ui/cn';
 import { usePrefs } from '@/components/providers/PrefsProvider';
-import { formatNumber, localizeDigits } from '@/lib/format';
+import { formatNumber } from '@/lib/format';
 import { t } from '@/lib/i18n';
 import { parseGuess } from '@/lib/parseGuess';
 
@@ -98,9 +98,7 @@ export function GuessInput({
           </span>
         ) : invalid ? (
           <span className={hero ? 'text-sand' : 'text-tier-red'}>{t.game.invalidGuess}</span>
-        ) : (
-          <span className={hero ? 'text-hero-ink/70' : 'text-muted'}>{localizeDigits(t.game.guessHint, digitStyle)}</span>
-        )}
+        ) : null}
       </p>
     </div>
   );

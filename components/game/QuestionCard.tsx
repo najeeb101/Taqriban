@@ -67,17 +67,17 @@ export function QuestionCard({
   const len = question.text.length;
   const qSize =
     len <= 45
-      ? 'text-[2.5rem] md:text-[clamp(2.25rem,8dvh,4.25rem)]'
+      ? 'text-[clamp(1.9rem,10.5vw,2.5rem)] md:text-[clamp(2.25rem,8dvh,4.25rem)]'
       : len <= 70
-        ? 'text-[2.15rem] md:text-[clamp(2.1rem,7.6dvh,4rem)]'
+        ? 'text-[clamp(1.7rem,9vw,2.15rem)] md:text-[clamp(2.1rem,7.6dvh,4rem)]'
         : len <= 95
-          ? 'text-[1.9rem] md:text-[clamp(1.75rem,5.8dvh,3rem)]'
-          : 'text-[1.7rem] md:text-[clamp(1.8rem,6dvh,3rem)]';
+          ? 'text-[clamp(1.5rem,8vw,1.9rem)] md:text-[clamp(1.75rem,5.8dvh,3rem)]'
+          : 'text-[clamp(1.4rem,7.2vw,1.7rem)] md:text-[clamp(1.8rem,6dvh,3rem)]';
 
   return (
     <section
       aria-labelledby={headingId}
-      className="relative flex flex-col gap-6 overflow-hidden rounded-[2rem] bg-hero p-6 text-hero-ink shadow-card md:gap-[clamp(0.75rem,2.6dvh,2rem)] md:rounded-[2.5rem] md:p-[clamp(1.25rem,4.5dvh,2.5rem)]"
+      className="relative flex flex-col gap-6 overflow-hidden rounded-[2rem] bg-hero p-5 text-hero-ink min-[360px]:p-6 shadow-card md:gap-[clamp(0.75rem,2.6dvh,2rem)] md:rounded-[2.5rem] md:p-[clamp(1.25rem,4.5dvh,2.5rem)]"
     >
       {/* big faint category icon as a watermark */}
       <CategoryIcon
@@ -86,7 +86,7 @@ export function QuestionCard({
         className="pointer-events-none absolute -bottom-10 -start-10 -rotate-12 text-hero-ink opacity-[0.07]"
       />
 
-      <div className="relative flex items-center justify-between gap-3">
+      <div className="relative flex flex-wrap items-center justify-between gap-x-3 gap-y-1">
         {tabs}
         <p className="sr-only">
           {fmtNode(t.game.questionOf, {
@@ -151,7 +151,6 @@ export function QuestionCard({
           {t.game.lockIn}
         </Button>
       </div>
-      <p className="relative text-center text-sm text-hero-ink/75">{t.game.oneGuess}</p>
 
       <Calculator
         open={calcOpen}

@@ -8,6 +8,7 @@
 import { useCallback, useEffect, useState, type ReactNode, type Ref } from 'react';
 import { Button } from '@/components/ui/Button';
 import type { ChipTone } from '@/components/ui/Chip';
+import { cn } from '@/components/ui/cn';
 import { Icon } from '@/components/ui/Icon';
 import { Markdown } from '@/components/ui/Markdown';
 import { Num } from '@/components/ui/Num';
@@ -132,9 +133,22 @@ export function RevealCard({
   // while counting show whole numbers; the final value is exact (may be decimal)
   const answerText = formatNumber(counting ? Math.round(shownAnswer) : reveal.answer, digitStyle);
   const dirIcon = exact ? 'target' : reveal.direction === 'low' ? 'arrowDown' : 'arrowUp';
+  // Guess and answer share one size, picked by the longer final figure, so «100,000,000» fits half a phone screen.
+  const figLen = Math.max(
+    formatNumber(reveal.guess, digitStyle).length,
+    formatNumber(reveal.answer, digitStyle).length,
+  );
+  const figSize =
+    figLen <= 5
+      ? 'text-[clamp(1.5rem,8.5vw,1.875rem)] md:text-[clamp(2rem,6dvh,3rem)]'
+      : figLen <= 7
+        ? 'text-[clamp(1.15rem,6.2vw,1.875rem)] md:text-[clamp(2rem,6dvh,3rem)]'
+        : figLen <= 9
+          ? 'text-[clamp(1rem,5.2vw,1.6rem)] md:text-[clamp(1.75rem,5dvh,2.6rem)]'
+          : 'text-[clamp(0.875rem,4.3vw,1.35rem)] md:text-[clamp(1.4rem,4dvh,2rem)]';
 
   return (
-    <section className="relative flex min-h-[calc(100dvh-7.5rem)] flex-col gap-6 overflow-hidden rounded-[2rem] bg-hero p-6 text-hero-ink shadow-card md:gap-[clamp(0.75rem,2.6dvh,1.75rem)] md:rounded-[2.5rem] md:p-[clamp(1.25rem,4.5dvh,2.5rem)]">
+    <section className="relative flex min-h-[calc(100dvh-7.5rem)] flex-col gap-6 overflow-hidden rounded-[2rem] bg-hero p-5 text-hero-ink shadow-card min-[360px]:p-6 md:gap-[clamp(0.75rem,2.6dvh,1.75rem)] md:rounded-[2.5rem] md:p-[clamp(1.25rem,4.5dvh,2.5rem)]">
       {celebrate ? <Confetti /> : null}
       {tabs ? <div className="relative">{tabs}</div> : null}
       <h2 ref={headingRef} tabIndex={-1} className="sr-only outline-none">
@@ -143,16 +157,16 @@ export function RevealCard({
 
       {/* guess -> answer ledger */}
       <div className="relative grid grid-cols-2 gap-3 md:gap-4">
-        <div className="rounded-3xl bg-hero-ink/15 p-4 md:p-[clamp(0.75rem,2.4dvh,1.5rem)]">
+        <div className="min-w-0 rounded-3xl bg-hero-ink/15 p-4 md:p-[clamp(0.75rem,2.4dvh,1.5rem)]">
           <p className="text-sm font-semibold text-hero-ink/80 md:text-base">{t.game.yourGuess}</p>
-          <p className="mt-1 font-display text-3xl font-bold md:text-[clamp(2rem,6dvh,3rem)]">
+          <p className={cn('mt-1 font-display font-bold [overflow-wrap:anywhere]', figSize)}>
             <Num>{formatNumber(reveal.guess, digitStyle)}</Num>
           </p>
           {question.unit ? <p className="text-sm text-hero-ink/70">{question.unit}</p> : null}
         </div>
-        <div className="rounded-3xl bg-white p-4 text-hero ring-4 ring-sand md:p-[clamp(0.75rem,2.4dvh,1.5rem)]">
+        <div className="min-w-0 rounded-3xl bg-white p-4 text-hero ring-4 ring-sand md:p-[clamp(0.75rem,2.4dvh,1.5rem)]">
           <p className="text-sm font-semibold opacity-80 md:text-base">{t.game.guessedAnswerLine}</p>
-          <p className="mt-1 font-display text-3xl font-bold md:text-[clamp(2rem,6dvh,3rem)]">
+          <p className={cn('mt-1 font-display font-bold [overflow-wrap:anywhere]', figSize)}>
             <Num>{answerText}</Num>
           </p>
           {question.unit ? <p className="text-sm opacity-75">{question.unit}</p> : null}

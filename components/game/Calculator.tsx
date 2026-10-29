@@ -140,19 +140,16 @@ export function Calculator({
           >
             {expr === '' ? ' ' : localizeDigits(expr, digitStyle)}
           </div>
-          <div className="num min-h-10 text-3xl font-medium text-ink" aria-label={t.game.calcResult}>
-            {result !== null && Number.isFinite(result) ? formatNumber(result, digitStyle) : ' '}
-          </div>
+          {result !== null && Number.isFinite(result) && result > 0 ? (
+            <div className="num min-h-10 text-3xl font-medium text-ink" aria-label={t.game.calcResult}>
+              {formatNumber(result, digitStyle)}
+            </div>
+          ) : (
+            <p dir="rtl" className="flex min-h-10 items-end text-sm text-muted">
+              {expr === '' ? t.game.calcHint : result === null ? t.game.calcIncomplete : t.game.calcNeedPositive}
+            </p>
+          )}
         </div>
-        <p dir="rtl" className="min-h-6 text-sm text-muted">
-          {expr === ''
-            ? t.game.calcHint
-            : result === null
-              ? t.game.calcIncomplete
-              : result <= 0
-                ? t.game.calcNeedPositive
-                : ''}
-        </p>
         <div className="grid grid-cols-4 gap-2" role="group" aria-label={t.game.calcTitle}>
           {KEYS.map((key) => (
             <button
@@ -161,7 +158,7 @@ export function Calculator({
               aria-label={key.aria}
               onClick={() => press(key)}
               className={cn(
-                'num min-h-14 rounded-xl border text-2xl font-medium transition active:translate-y-px',
+                'num h-[clamp(2.75rem,7dvh,3.5rem)] rounded-xl border text-2xl font-medium transition active:translate-y-px',
                 key.kind === 'digit' && 'border-line bg-surface text-ink hover:border-ink/40',
                 key.kind === 'op' && 'border-accent/30 bg-accent/10 text-accent hover:bg-accent/20',
                 key.kind === 'fn' && 'border-line bg-ink/5 text-ink hover:bg-ink/10',

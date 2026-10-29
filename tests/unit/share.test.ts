@@ -23,7 +23,7 @@ describe('shareText', () => {
       '🟩 ⬇️ 1.45×',
       '🟨 ⬆️ 2.18×',
       '🟨 ⬇️ 2.30×',
-      'https://taqriban.example',
+      'taqriban.example',
     ]
       .map((l) => RLM + l)
       .join('\n');

@@ -626,6 +626,12 @@ function SubmissionsInbox({ digits, onChanged }: { digits: DigitStyle; onChanged
                       <p className="m-0 mt-1 leading-[1.8] whitespace-pre-wrap">{s.napkin_ar}</p>
                     </details>
                   ) : null}
+                  {s.ai_verdict ? (
+                    <div className="rounded-xl bg-sand/40 px-3 py-2 text-sm leading-[1.8]">
+                      <span className="font-semibold">{A.aiVerdict[s.ai_verdict]}</span>
+                      {s.ai_reason ? <p className="m-0 whitespace-pre-wrap">{s.ai_reason}</p> : null}
+                    </div>
+                  ) : null}
                   <div className="flex flex-wrap items-center justify-between gap-3">
                     <p className="m-0 text-xs text-muted">
                       {s.display_name ?? A.anonymous} · {dateTime(s.created_at, digits)}

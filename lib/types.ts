@@ -123,6 +123,7 @@ export interface AdminSubmission {
   id: number; text_ar: string; unit_ar: string | null; proposed_answer: number | null; source_url: string | null;
   napkin_ar: string | null; credit_name: string | null; status: SubmissionStatus; created_at: string;
   display_name: string | null;
+  ai_verdict: 'approve' | 'reject' | 'unsure' | null; ai_reason: string | null; ai_reviewed_at: string | null;
 }
 
 export interface AuthState { userId: string; isAnonymous: boolean; email: string | null }
