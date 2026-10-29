@@ -56,8 +56,15 @@ function section(body: string, heading: string): string {
   return (next >= 0 ? rest.slice(0, next) : rest).trim();
 }
 
+// Fermi-style barrier (content/README.md "Style"): an answer must be a number a player can build from everyday
+// estimates. Past 100 million the figure stops being imaginable and the question turns into stats trivia.
+const MAX_ANSWER = 100_000_000;
+// Units that usually mean "look up an official statistic" rather than "estimate it". Warning only.
+const LOOKUP_UNITS = ['طن', 'تيراواط ساعة', 'حاوية قياسية', 'متر مكعب', 'نسمة'];
+
 const dir = path.join('content', 'questions');
 const errors: string[] = [];
+const warnings: string[] = [];
 const qs: Q[] = [];
 
 for (const file of fs.readdirSync(dir).filter((f) => f.endsWith('.md')).sort()) {
@@ -82,6 +89,11 @@ for (const file of fs.readdirSync(dir).filter((f) => f.endsWith('.md')).sort()) 
     errors.push(`${file}: invalid/missing ${problems.join(', ')}`);
     continue;
   }
+  if (answer > MAX_ANSWER) {
+    errors.push(`${file}: answer ${answer.toLocaleString('en')} is over the ${MAX_ANSWER.toLocaleString('en')} limit - rewrite it as a smaller, everyday question`);
+    continue;
+  }
+  if (LOOKUP_UNITS.includes(unit)) warnings.push(`${file}: unit «${unit}» reads like a statistics lookup - prefer an everyday unit`);
   const str = (v: unknown) => (v === undefined || v === null || v === '' ? null : String(v));
   qs.push({
     file,
@@ -122,6 +134,7 @@ for (const [n, list] of valid) {
 }
 console.log(`\n${valid.length} puzzle(s) valid, ${errors.length} problem(s).`);
 for (const e of errors) console.log(`  ! ${e}`);
+for (const w of warnings) console.log(`  ~ ${w}`);
 
 async function main() {
   if (dryRun) return;

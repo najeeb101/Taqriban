@@ -23,5 +23,5 @@ export function Card({
   tone?: keyof typeof TONE;
 }) {
   const Tag = (as ?? 'div') as ElementType;
-  return <Tag className={cn('rounded-2xl border', TONE[tone], PAD[padding], className)} {...rest} />;
+  return <Tag className={cn('rounded-3xl border', TONE[tone], PAD[padding], className)} {...rest} />;
 }

@@ -19,6 +19,7 @@ export function GuessInput({
   disabled = false,
   inputRef,
   className,
+  tone = 'default',
 }: {
   value: string;
   onChange: (text: string) => void;
@@ -28,9 +29,12 @@ export function GuessInput({
   disabled?: boolean;
   inputRef?: Ref<HTMLInputElement>;
   className?: string;
+  /** 'onHero' = translucent field with sand accents, for the flat maroon question card. */
+  tone?: 'default' | 'onHero';
 }) {
   const { digitStyle } = usePrefs();
   const id = useId();
+  const hero = tone === 'onHero';
   const parsed = value.trim() === '' ? null : parseGuess(value);
   const invalid = value.trim() !== '' && parsed === null;
 
@@ -38,9 +42,11 @@ export function GuessInput({
     <div className={cn('flex flex-col gap-2', className)}>
       <div
         className={cn(
-          'flex min-h-16 items-center gap-3 rounded-2xl border-2 bg-surface px-4 transition-colors',
-          'focus-within:border-accent',
-          invalid ? 'border-tier-red' : 'border-line',
+          'flex items-center gap-3 border-2 px-4 transition-colors',
+          hero
+            ? 'min-h-[4.5rem] rounded-3xl bg-hero-ink/15 px-5 focus-within:border-sand md:min-h-[clamp(3.5rem,9dvh,6rem)]'
+            : 'min-h-16 rounded-2xl bg-surface focus-within:border-accent',
+          invalid ? (hero ? 'border-sand' : 'border-tier-red') : hero ? 'border-transparent' : 'border-line',
         )}
       >
         <input
@@ -67,24 +73,33 @@ export function GuessInput({
               onSubmit();
             }
           }}
-          className="num min-w-0 flex-1 bg-transparent py-3 text-end text-2xl font-medium text-ink outline-none placeholder:text-base placeholder:font-normal placeholder:text-muted"
+          className={cn(
+            'num min-w-0 flex-1 bg-transparent py-3 text-end font-medium outline-none placeholder:text-base placeholder:font-normal',
+            hero
+              ? 'font-display text-3xl text-hero-ink placeholder:text-hero-ink/60 md:text-[clamp(1.5rem,4.6dvh,2.25rem)]'
+              : 'text-2xl text-ink placeholder:text-muted',
+          )}
           style={{ outline: 'none', boxShadow: 'none' }}
         />
         {unit ? (
-          <span className="max-w-[40%] shrink-0 text-muted" title={unit}>
+          <span
+            className={cn('max-w-[40%] shrink-0', hero ? 'font-display text-lg font-semibold text-sand md:text-xl' : 'text-muted')}
+            title={unit}
+          >
             {unit}
           </span>
         ) : null}
       </div>
       <p id={`${id}-help`} className="min-h-7 text-sm" aria-live="polite">
         {parsed !== null ? (
-          <span className="text-muted">
-            {t.game.previewLabel} <Num className="font-medium text-ink">{formatNumber(parsed, digitStyle)}</Num>
+          <span className={hero ? 'text-hero-ink/80' : 'text-muted'}>
+            {t.game.previewLabel}{' '}
+            <Num className={cn('font-medium', hero ? 'text-sand' : 'text-ink')}>{formatNumber(parsed, digitStyle)}</Num>
           </span>
         ) : invalid ? (
-          <span className="text-tier-red">{t.game.invalidGuess}</span>
+          <span className={hero ? 'text-sand' : 'text-tier-red'}>{t.game.invalidGuess}</span>
         ) : (
-          <span className="text-muted">{localizeDigits(t.game.guessHint, digitStyle)}</span>
+          <span className={hero ? 'text-hero-ink/70' : 'text-muted'}>{localizeDigits(t.game.guessHint, digitStyle)}</span>
         )}
       </p>
     </div>

@@ -11,11 +11,13 @@ export function ProgressDots({
   done,
   current,
   className,
+  tone = 'default',
 }: {
   total: number;
   done: number;
   current?: number | null;
   className?: string;
+  tone?: 'default' | 'onHero';
 }) {
   const { digitStyle } = usePrefs();
   const label = fmt(t.game.progressLabel, {
@@ -33,7 +35,17 @@ export function ProgressDots({
             aria-hidden="true"
             className={cn(
               'grid size-4 place-items-center rounded-full border-2 transition-colors',
-              filled ? 'border-accent bg-accent' : isCurrent ? 'border-accent bg-accent/15' : 'border-line bg-transparent',
+              tone === 'onHero'
+                ? filled
+                  ? 'border-sand bg-sand'
+                  : isCurrent
+                    ? 'border-sand bg-sand/20'
+                    : 'border-hero-ink/40 bg-transparent'
+                : filled
+                  ? 'border-accent bg-accent'
+                  : isCurrent
+                    ? 'border-accent bg-accent/15'
+                    : 'border-line bg-transparent',
             )}
           />
         );

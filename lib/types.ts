@@ -88,4 +88,41 @@ export interface SubmissionInput {
   source_url?: string; napkin?: string; credit_name?: string;
 }
 
+export type FeedbackKind = 'idea' | 'bug' | 'like' | 'other';
+export interface FeedbackInput {
+  kind: FeedbackKind; message: string; rating?: number | null; contact?: string;
+}
+
+// ---- admin (/admin; every call raises `forbidden` for non-admins)
+export type FeedbackStatus = 'new' | 'read' | 'done';
+export type SubmissionStatus = 'new' | 'reviewing' | 'accepted' | 'rejected' | 'scheduled';
+export interface AdminDashboard {
+  today: string;
+  kpis: {
+    players_total: number; players_new_7d: number; players_with_email: number;
+    active_today: number; active_7d: number; returning_7d: number; completions_today: number;
+    avg_score_7d: number | null; guesses_total: number; groups_total: number;
+    feedback_new: number; feedback_total: number; feedback_avg_rating: number | null; submissions_new: number;
+  };
+  activity: { day: string; new_players: number; active_players: number; completions: number }[]; // oldest first
+  puzzles: {
+    number: number; publish_date: string; players: number; completions: number;
+    daily_completions: number; avg_score: number | null;
+  }[]; // newest first
+  questions: {
+    puzzle_number: number; position: number; question_id: number; text_ar: string; players: number;
+    median_multiple: number | null; pct_low: number | null; pct_high: number | null;
+  }[];
+  universities: { university: string | null; players: number }[];
+}
+export interface AdminFeedback {
+  id: number; kind: FeedbackKind; rating: number | null; message: string; contact: string | null;
+  status: FeedbackStatus; created_at: string; display_name: string | null; university: string | null;
+}
+export interface AdminSubmission {
+  id: number; text_ar: string; unit_ar: string | null; proposed_answer: number | null; source_url: string | null;
+  napkin_ar: string | null; credit_name: string | null; status: SubmissionStatus; created_at: string;
+  display_name: string | null;
+}
+
 export interface AuthState { userId: string; isAnonymous: boolean; email: string | null }

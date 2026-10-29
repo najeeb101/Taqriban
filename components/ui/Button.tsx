@@ -8,7 +8,7 @@ import type { ButtonHTMLAttributes, ComponentProps, ReactNode } from 'react';
 import { cn } from './cn';
 import { Spinner } from './Spinner';
 
-export type ButtonVariant = 'primary' | 'secondary' | 'ghost';
+export type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'onHero' | 'onHeroOutline';
 export type ButtonSize = 'sm' | 'md' | 'lg';
 
 const VARIANT: Record<ButtonVariant, string> = {
@@ -16,6 +16,10 @@ const VARIANT: Record<ButtonVariant, string> = {
     'bg-accent text-accent-ink shadow-card hover:brightness-110 active:brightness-95 border border-transparent',
   secondary: 'bg-surface text-ink border border-line hover:border-ink/40 active:bg-ink/5',
   ghost: 'bg-transparent text-ink border border-transparent hover:bg-ink/5 active:bg-ink/10',
+  // white pill for use on the flat maroon hero card
+  onHero: 'bg-white text-hero shadow-card hover:brightness-95 active:brightness-90 border border-transparent',
+  // dimmed outline pill on the hero card (e.g. «ثبّت إجابتك» before a valid guess is typed)
+  onHeroOutline: 'bg-transparent text-hero-ink/80 border-2 border-hero-ink/50 hover:border-hero-ink',
 };
 
 const SIZE: Record<ButtonSize, string> = {
@@ -36,7 +40,7 @@ export function buttonClasses({
   className?: string;
 } = {}): string {
   return cn(
-    'inline-flex select-none items-center justify-center gap-2 rounded-xl font-medium no-underline transition',
+    'inline-flex select-none items-center justify-center gap-2 rounded-full font-display font-semibold no-underline transition',
     'active:translate-y-px disabled:pointer-events-none disabled:opacity-50',
     VARIANT[variant],
     SIZE[size],

@@ -1,21 +1,29 @@
 import type { Metadata, Viewport } from 'next';
-import { IBM_Plex_Sans_Arabic, Reem_Kufi } from 'next/font/google';
+import { El_Messiri, Marhey, Readex_Pro } from 'next/font/google';
 import { Providers } from '@/components/providers/Providers';
 import { ServiceWorkerRegister } from '@/components/social/ServiceWorkerRegister';
 import { AppShell } from '@/components/shell/AppShell';
 import { t } from '@/lib/i18n';
 import './globals.css';
 
-const plex = IBM_Plex_Sans_Arabic({
-  weight: ['400', '500', '700'],
+const readex = Readex_Pro({
+  weight: ['400', '500', '600', '700'],
   subsets: ['arabic', 'latin'],
-  variable: '--font-plex',
+  variable: '--font-readex',
   display: 'swap',
 });
 
-const reem = Reem_Kufi({
+const messiri = El_Messiri({
+  weight: ['500', '600', '700'],
   subsets: ['arabic', 'latin'],
-  variable: '--font-reem',
+  variable: '--font-messiri',
+  display: 'swap',
+});
+
+const marhey = Marhey({
+  weight: ['700'],
+  subsets: ['arabic', 'latin'],
+  variable: '--font-marhey',
   display: 'swap',
 });
 
@@ -32,7 +40,7 @@ export const viewport: Viewport = {
   initialScale: 1,
   themeColor: [
     { media: '(prefers-color-scheme: light)', color: '#F4EFE6' },
-    { media: '(prefers-color-scheme: dark)', color: '#16201B' },
+    { media: '(prefers-color-scheme: dark)', color: '#161312' },
   ],
 };
 
@@ -41,7 +49,7 @@ const THEME_SCRIPT = `(function(){try{var d=document.documentElement;var t=local
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="ar" dir="rtl" className={`${plex.variable} ${reem.variable}`} suppressHydrationWarning>
+    <html lang="ar" dir="rtl" className={`${readex.variable} ${messiri.variable} ${marhey.variable}`} suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
       </head>

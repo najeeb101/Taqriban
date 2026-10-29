@@ -1,5 +1,5 @@
 'use client';
-// Header — sticky top bar: logo (Reem Kufi, links home), streak flame (when current_streak > 0), menu button.
+// Header — sticky top bar: logo (El Messiri, links home), streak flame (when current_streak > 0), menu button.
 // Props: onMenu (opens the NavDrawer), menuOpen? (aria-expanded).
 import Link from 'next/link';
 import { fmt, t } from '@/lib/i18n';
@@ -16,7 +16,7 @@ export function Header({ onMenu, menuOpen = false }: { onMenu: () => void; menuO
 
   return (
     <header className="sticky top-0 z-30 border-b border-line bg-bg/85 backdrop-blur-md">
-      <div className="mx-auto flex h-16 w-full max-w-[32rem] items-center gap-2 px-4">
+      <div className="flex h-16 w-full items-center gap-2 px-4 md:px-8">
         <Link
           href="/"
           aria-label={t.common.nav.home}

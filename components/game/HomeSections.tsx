@@ -1,5 +1,6 @@
 'use client';
-// HomeSections — static explanatory sections of the home page (how to play, what is a Fermi question, suggest, FAQ).
+// HomeSections — static explanatory sections of the home page (how to play, what is a Fermi question, suggest,
+// feedback, FAQ).
 // Client component only so digits follow the player's digit-style preference.
 import { ButtonLink } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
@@ -50,6 +51,19 @@ export function HomeSections() {
           <p className="m-0">{S.suggestBody}</p>
           <ButtonLink href="/submit" variant="secondary">
             {S.suggestCta}
+          </ButtonLink>
+        </Card>
+      </section>
+
+      <section aria-labelledby="feedback">
+        <Card padding="lg" className="flex flex-col items-start gap-3">
+          <h2 id="feedback" className="flex items-center gap-2">
+            <Icon name="message" size={24} className="text-accent" />
+            {S.feedbackTitle}
+          </h2>
+          <p className="m-0">{S.feedbackBody}</p>
+          <ButtonLink href="/feedback" variant="secondary">
+            {S.feedbackCta}
           </ButtonLink>
         </Card>
       </section>

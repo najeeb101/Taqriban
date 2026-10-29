@@ -13,6 +13,12 @@ import type {
   PuzzleState,
   Results,
   SubmissionInput,
+  FeedbackInput,
+  FeedbackStatus,
+  SubmissionStatus,
+  AdminDashboard,
+  AdminFeedback,
+  AdminSubmission,
   SubmitGuessResult,
 } from './types';
 import { ensureSession, getSupabase, resetSession } from './supabase';
@@ -30,6 +36,7 @@ const SERVER_CODES = [
   'invalid_code',
   'rate_limited',
   'not_found',
+  'forbidden',
 ] as const;
 
 export type ApiErrorCode = (typeof SERVER_CODES)[number] | 'network' | 'unknown';
@@ -166,6 +173,40 @@ export function submitQuestion(input: SubmissionInput): Promise<{ id: number }> 
     p_napkin: input.napkin,
     p_credit_name: input.credit_name,
   });
+}
+
+export function submitFeedback(input: FeedbackInput): Promise<{ id: number }> {
+  return rpc<{ id: number }>('submit_feedback', {
+    p_kind: input.kind,
+    p_message: input.message,
+    p_rating: input.rating ?? undefined,
+    p_contact: input.contact,
+  });
+}
+
+// ---- admin (server checks the caller; non-admins get ApiError('forbidden'))
+export function adminIsAdmin(): Promise<boolean> {
+  return rpc<boolean>('admin_is_admin');
+}
+
+export function adminDashboard(): Promise<AdminDashboard> {
+  return rpc<AdminDashboard>('admin_dashboard');
+}
+
+export async function adminListFeedback(status?: FeedbackStatus): Promise<AdminFeedback[]> {
+  return (await rpc<AdminFeedback[] | null>('admin_list_feedback', { p_status: status })) ?? [];
+}
+
+export async function adminSetFeedbackStatus(id: number, status: FeedbackStatus): Promise<void> {
+  await rpc<null>('admin_set_feedback_status', { p_id: id, p_status: status });
+}
+
+export async function adminListSubmissions(status?: SubmissionStatus): Promise<AdminSubmission[]> {
+  return (await rpc<AdminSubmission[] | null>('admin_list_submissions', { p_status: status })) ?? [];
+}
+
+export async function adminSetSubmissionStatus(id: number, status: SubmissionStatus): Promise<void> {
+  await rpc<null>('admin_set_submission_status', { p_id: id, p_status: status });
 }
 
 export async function deleteMyData(): Promise<void> {

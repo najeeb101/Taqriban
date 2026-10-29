@@ -15,6 +15,7 @@ const ITEMS: { href: string; label: string; icon: IconName; match: (p: string) =
   { href: '/groups', label: t.common.nav.groups, icon: 'users', match: (p) => p.startsWith('/groups') },
   { href: '/profile', label: t.common.nav.profile, icon: 'user', match: (p) => p.startsWith('/profile') },
   { href: '/submit', label: t.common.nav.submit, icon: 'lightbulb', match: (p) => p.startsWith('/submit') },
+  { href: '/feedback', label: t.common.nav.feedback, icon: 'message', match: (p) => p.startsWith('/feedback') },
   { href: '/settings', label: t.common.nav.settings, icon: 'settings', match: (p) => p.startsWith('/settings') },
 ];
 

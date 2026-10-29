@@ -15,10 +15,12 @@ export function LogHistogram({
   histogram,
   answer,
   className,
+  tone = 'default',
 }: {
   histogram: Histogram;
   answer: number;
   className?: string;
+  tone?: 'default' | 'onHero';
 }) {
   const { digitStyle } = usePrefs();
   const dense = denseBins(histogram.bins, -12, 12);
@@ -42,8 +44,11 @@ export function LogHistogram({
 
   return (
     <figure className={cn('m-0 flex flex-col gap-2', className)}>
-      <figcaption className="text-sm text-muted">{t.game.howEveryone}</figcaption>
+      <figcaption className={tone === 'onHero' ? 'font-display text-lg font-semibold text-hero-ink' : 'text-sm text-muted'}>
+        {t.game.howEveryone}
+      </figcaption>
       <BinChart
+        tone={tone}
         bins={dense}
         min={-12}
         max={12}

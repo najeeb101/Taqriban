@@ -12,7 +12,7 @@ const MUTED = '#6E675C';
 const PAPER = '#F4EFE6';
 const SURFACE = '#FBF8F2';
 const LINE = '#DDD5C7';
-const ACCENT = '#B4441C';
+const ACCENT = '#8A1538';
 const TIER_HEX: Record<Tier, string> = {
   sniper: '#2F9E44',
   great: '#2F9E44',
@@ -72,13 +72,13 @@ export function ShareCard({
         justifyContent: 'space-between',
         padding: '84px 80px 72px',
         boxSizing: 'border-box',
-        fontFamily: 'var(--font-plex), ui-sans-serif, system-ui, sans-serif',
+        fontFamily: 'var(--font-readex), ui-sans-serif, system-ui, sans-serif',
         lineHeight: 1.4,
-        border: `6px solid ${INK}`,
+        border: `10px solid ${ACCENT}`,
       }}
     >
       <div style={{ textAlign: 'center' }}>
-        <div style={{ fontFamily: 'var(--font-reem), var(--font-plex), sans-serif', fontSize: 120, fontWeight: 700, color: ACCENT }}>
+        <div style={{ fontFamily: 'var(--font-messiri), var(--font-readex), sans-serif', fontSize: 130, fontWeight: 700, color: ACCENT }}>
           {t.common.appName}
         </div>
         <div style={{ fontSize: 40, color: MUTED, marginTop: 8 }}>

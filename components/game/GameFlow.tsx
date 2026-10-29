@@ -12,6 +12,8 @@ import { Icon } from '@/components/ui/Icon';
 import { Num } from '@/components/ui/Num';
 import { Spinner } from '@/components/ui/Spinner';
 import { Tabs } from '@/components/ui/Tabs';
+import { cn } from '@/components/ui/cn';
+import { PLAY_BREAKOUT } from '@/components/ui/layout';
 import { useToast } from '@/components/ui/Toast';
 import { usePlayer } from '@/components/providers/PlayerProvider';
 import { usePrefs } from '@/components/providers/PrefsProvider';
@@ -22,6 +24,7 @@ import { errorMessage, t } from '@/lib/i18n';
 import type { PuzzleState, Results, Reveal } from '@/lib/types';
 import { ProgressDots } from './ProgressDots';
 import { QuestionCard } from './QuestionCard';
+import { QuestionTabs } from './QuestionTabs';
 import { RevealCard } from './RevealCard';
 import { ResultsView } from './ResultsView';
 import { fmtNode } from './richText';
@@ -203,14 +206,20 @@ export function GameFlow({ puzzleNo }: { puzzleNo?: number }) {
   const total = puzzle.questions.length;
   const current = stage.kind === 'input' ? stage.index : null;
 
+  const archiveBanner = !puzzle.is_daily ? (
+    <Card tone="accent" padding="sm" className="flex items-center gap-2 text-sm" role="note">
+      <Icon name="archive" size={18} className="shrink-0 text-accent" />
+      <span>{t.game.archiveBanner}</span>
+    </Card>
+  ) : null;
+  const revealedIds = puzzle.questions.filter((q) => reveals[q.id]).map((q) => q.id);
+  const tabsNode = (
+    <QuestionTabs questions={puzzle.questions} revealedIds={revealedIds} currentIndex={stage.kind === 'results' ? null : stage.index} />
+  );
+
   const header = (
     <div className="flex flex-col gap-4">
-      {!puzzle.is_daily ? (
-        <Card tone="accent" padding="sm" className="flex items-center gap-2 text-sm" role="note">
-          <Icon name="archive" size={18} className="shrink-0 text-accent" />
-          <span>{t.game.archiveBanner}</span>
-        </Card>
-      ) : null}
+      {archiveBanner}
       <div className="flex flex-col items-center gap-2 text-center">
         <p className="text-sm text-muted">
           {fmtNode(t.game.puzzleNumber, { n: <Num>{formatNumber(puzzle.number, digitStyle)}</Num> })}
@@ -225,13 +234,14 @@ export function GameFlow({ puzzleNo }: { puzzleNo?: number }) {
   if (stage.kind === 'input') {
     const q = puzzle.questions[stage.index];
     return (
-      <div className="flex flex-col gap-5">
-        {header}
+      <div className={cn('flex flex-col gap-5', PLAY_BREAKOUT)}>
+        {archiveBanner}
         <QuestionCard
           key={q.id}
           question={q}
           index={stage.index}
           total={total}
+          tabs={tabsNode}
           submitting={submitting}
           autoFocus={interacted}
           onLock={(g) => lock(stage.index, g)}
@@ -245,11 +255,12 @@ export function GameFlow({ puzzleNo }: { puzzleNo?: number }) {
     const reveal = reveals[q.id];
     const hasNext = puzzle.questions.some((x) => !reveals[x.id]);
     return (
-      <div className="flex flex-col gap-5">
-        {header}
+      <div className={cn('flex flex-col gap-5', PLAY_BREAKOUT)}>
+        {archiveBanner}
         {reveal ? (
           <RevealCard
             key={q.id}
+            tabs={tabsNode}
             reveal={reveal}
             question={q}
             nextLabel={hasNext ? t.game.nextQuestion : t.game.seeResult}

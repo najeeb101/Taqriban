@@ -36,6 +36,7 @@ export function BinChart({
   endLabels,
   ariaLabel,
   className,
+  tone = 'default',
 }: {
   bins: Bin[];
   min: number;
@@ -46,7 +47,10 @@ export function BinChart({
   endLabels?: { start: string; end: string };
   ariaLabel: string;
   className?: string;
+  /** 'onHero' = white/sand marks for the flat maroon card. */
+  tone?: 'default' | 'onHero';
 }) {
+  const hero = tone === 'onHero';
   const n = max - min + 1;
   const maxCount = Math.max(1, ...bins.map((b) => b.count));
   const rows = markers.length ? Math.max(...markers.map((m) => m.row)) + 1 : 0;
@@ -58,12 +62,19 @@ export function BinChart({
         {markers.map((m) => {
           const pct = binCenterPct(m.bin, min, max);
           const a = alignFor(pct);
-          const cls = m.tone === 'accent' ? 'border-accent text-accent' : 'border-ink/50 text-ink';
+          const cls = hero
+            ? m.tone === 'accent'
+              ? 'border-sand text-sand'
+              : 'border-hero-ink/70 text-hero-ink'
+            : m.tone === 'accent'
+              ? 'border-accent text-accent'
+              : 'border-ink/50 text-ink';
           return (
             <div key={`${m.tone}-${m.bin}`} aria-hidden="true">
               <span
                 className={cn(
-                  'absolute z-10 rounded-full border bg-surface px-2 text-xs leading-5 font-medium whitespace-nowrap',
+                  'absolute z-10 rounded-full border px-2 text-xs leading-5 font-medium whitespace-nowrap',
+                  hero ? 'bg-hero' : 'bg-surface',
                   cls,
                 )}
                 style={{ top: m.row * ROW_H, left: a.left, transform: `translateX(${a.translate})` }}
@@ -80,11 +91,11 @@ export function BinChart({
         <svg
           viewBox={`0 0 ${n} 100`}
           preserveAspectRatio="none"
-          className="block h-28 w-full overflow-visible"
+          className={cn('block w-full overflow-visible', hero ? 'h-[clamp(4.5rem,13dvh,7rem)]' : 'h-28')}
           aria-hidden="true"
           focusable="false"
         >
-          <line x1="0" y1="100" x2={n} y2="100" className="stroke-line" strokeWidth="1" vectorEffect="non-scaling-stroke" />
+          <line x1="0" y1="100" x2={n} y2="100" className={hero ? 'stroke-hero-ink/40' : 'stroke-line'} strokeWidth="1" vectorEffect="non-scaling-stroke" />
           {bins.map((b, i) => {
             const h = b.count > 0 ? Math.max(4, (b.count / maxCount) * 96) : 1.5;
             const hi = highlightBin !== null && b.bin === highlightBin;
@@ -95,7 +106,19 @@ export function BinChart({
                 y={100 - h}
                 width={0.76}
                 height={h}
-                className={hi ? 'fill-accent' : b.count > 0 ? 'fill-muted/45' : 'fill-muted/20'}
+                className={
+                  hero
+                    ? hi
+                      ? 'fill-sand'
+                      : b.count > 0
+                        ? 'fill-hero-ink/40'
+                        : 'fill-hero-ink/15'
+                    : hi
+                      ? 'fill-accent'
+                      : b.count > 0
+                        ? 'fill-muted/45'
+                        : 'fill-muted/20'
+                }
               />
             );
           })}
@@ -108,14 +131,14 @@ export function BinChart({
           return (
             <span
               key={tk.bin}
-              className="absolute top-0 flex flex-col text-xs text-muted"
+              className={cn('absolute top-0 flex flex-col text-xs', hero ? 'text-hero-ink/75' : 'text-muted')}
               style={{
                 left: a.left,
                 transform: `translateX(${a.translate})`,
                 alignItems: a.translate === '0%' ? 'flex-start' : a.translate === '-100%' ? 'flex-end' : 'center',
               }}
             >
-              <span className="h-1.5 w-px bg-line" />
+              <span className={cn('h-1.5 w-px', hero ? 'bg-hero-ink/40' : 'bg-line')} />
               {tk.label ? (
                 <span dir="rtl" className="whitespace-nowrap">
                   {tk.label}
@@ -126,7 +149,7 @@ export function BinChart({
         })}
       </div>
       {endLabels ? (
-        <div className="mt-0.5 flex justify-between text-xs text-muted" aria-hidden="true">
+        <div className={cn('mt-0.5 flex justify-between text-xs', hero ? 'text-hero-ink/75' : 'text-muted')} aria-hidden="true">
           <span dir="rtl">{endLabels.start}</span>
           <span dir="rtl">{endLabels.end}</span>
         </div>

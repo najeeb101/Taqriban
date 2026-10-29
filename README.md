@@ -5,7 +5,7 @@
 An Arabic-first, RTL, mobile-first daily Fermi-estimation game. Each day: 3 questions, one locked guess per question, scored by how many times off you were (a multiple, and a geometric mean per day). Answers stay on the server until a guess is locked. Includes leaderboards, private groups, streaks, an archive, question submissions and a PWA shell. UI language: Arabic only.
 
 ## Tech stack
-Next.js 16 (App Router, Turbopack) · React 19 · TypeScript · Tailwind CSS v4 · Supabase (Postgres + anonymous auth; all data access via `security definer` RPCs) · Vitest (unit + integration) · Playwright (e2e) · `html-to-image` (share card) · IBM Plex Sans Arabic + Reem Kufi.
+Next.js 16 (App Router, Turbopack) · React 19 · TypeScript · Tailwind CSS v4 · Supabase (Postgres + anonymous auth; all data access via `security definer` RPCs) · Vitest (unit + integration) · Playwright (e2e) · `html-to-image` (share card) · Readex Pro + El Messiri + Marhey.
 
 ## Prerequisites
 Node 22, npm, Docker (for the local Supabase stack).
@@ -51,6 +51,14 @@ Read `content/README.md` (format and quality checklist). One file per question (
 
 ## Moderation
 User submissions land in the `submissions` table. Review them in Supabase Studio (local: http://127.0.0.1:55323, Table Editor). Statuses: `new`, `reviewing`, `accepted`, `rejected`, `scheduled`. Accepted ideas are turned into content files by hand.
+
+Player feedback from `/feedback` (also linked in the menu and on the home page) lands in the `feedback` table: `kind` (`idea`, `bug`, `like`, `other`), optional `rating` 1-5, `message`, optional `contact`. Mark rows `read` or `done` in the `status` column as you work through them.
+
+## Admin dashboard
+`/admin` (not linked from the menu) shows players and activity, the feedback inbox, question submissions and question calibration, and lets you change feedback and submission statuses.
+1. In the app, open Settings and link your email (local: confirm it in Mailpit at http://127.0.0.1:55324).
+2. `npm run admin -- add you@example.com` (also `list` and `remove <email>`; uses the service-role key from the environment, so it works against Cloud too).
+3. Open `/admin`. Anyone who is not a signed-in admin sees a locked page, and every admin RPC refuses them with `forbidden`.
 
 ## Calibration
 `npm run stats` prints, per question, players, median multiple and the share of low/high guesses, to spot questions that are too easy, too hard or biased.

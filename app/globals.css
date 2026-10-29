@@ -4,15 +4,18 @@
 @custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
 
 /* ---------------------------------------------------------------- tokens
-   Light = paper, dark = chalkboard (Docs/PLAN.md §6.4). */
+   Light = paper, dark = warm near-black. Maroon (Qatar) is the brand colour; --hero is the flat card colour in both themes. */
 :root {
   --bg: #f4efe6;
   --surface: #fbf8f2;
   --ink: #1f1c17;
   --muted: #6e675c;
   --line: #ddd5c7;
-  --accent: #b4441c;
+  --accent: #8a1538;
   --accent-ink: #ffffff;
+  --hero: #8a1538;
+  --hero-ink: #ffffff;
+  --sand: #f5d58a;
   --tier-green: #2f9e44;
   --tier-yellow: #c99a06;
   --tier-orange: #e8590c;
@@ -27,13 +30,13 @@
 }
 
 :root[data-theme="dark"] {
-  --bg: #16201b;
-  --surface: #1e2b25;
-  --ink: #ece8df;
-  --muted: #a3ada6;
-  --line: #33453d;
-  --accent: #f0895a;
-  --accent-ink: #16201b;
+  --bg: #161312;
+  --surface: #211c1a;
+  --ink: #efe9e1;
+  --muted: #a8a099;
+  --line: #3a322e;
+  --accent: #ee7f9d;
+  --accent-ink: #1a0f13;
   --tier-green: #51cf66;
   --tier-yellow: #fcc419;
   --tier-orange: #ff922b;
@@ -45,13 +48,13 @@
 /* No-JS fallback: follow the system scheme until the theme script sets data-theme. */
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme]) {
-    --bg: #16201b;
-    --surface: #1e2b25;
-    --ink: #ece8df;
-    --muted: #a3ada6;
-    --line: #33453d;
-    --accent: #f0895a;
-    --accent-ink: #16201b;
+    --bg: #161312;
+    --surface: #211c1a;
+    --ink: #efe9e1;
+    --muted: #a8a099;
+    --line: #3a322e;
+    --accent: #ee7f9d;
+    --accent-ink: #1a0f13;
     --tier-green: #51cf66;
     --tier-yellow: #fcc419;
     --tier-orange: #ff922b;
@@ -70,13 +73,17 @@
   --color-line: var(--line);
   --color-accent: var(--accent);
   --color-accent-ink: var(--accent-ink);
+  --color-hero: var(--hero);
+  --color-hero-ink: var(--hero-ink);
+  --color-sand: var(--sand);
   --color-tier-green: var(--tier-green);
   --color-tier-yellow: var(--tier-yellow);
   --color-tier-orange: var(--tier-orange);
   --color-tier-red: var(--tier-red);
 
-  --font-sans: var(--font-plex), ui-sans-serif, system-ui, "Segoe UI", Tahoma, sans-serif;
-  --font-display: var(--font-reem), var(--font-plex), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-readex), ui-sans-serif, system-ui, "Segoe UI", Tahoma, sans-serif;
+  --font-display: var(--font-messiri), var(--font-readex), ui-sans-serif, system-ui, sans-serif;
+  --font-script: var(--font-marhey), var(--font-readex), ui-sans-serif, system-ui, sans-serif;
 
   --shadow-card: var(--shadow);
 
@@ -114,6 +121,16 @@
     transform: scale(0.92);
   }
 }
+@keyframes confetti {
+  from {
+    opacity: 1;
+    transform: translate(0, 0) rotate(0deg) scale(0.6);
+  }
+  to {
+    opacity: 0;
+    transform: translate(var(--dx), var(--dy)) rotate(var(--rot)) scale(1);
+  }
+}
 @keyframes spin {
   to {
     transform: rotate(360deg);
@@ -136,12 +153,6 @@
     line-height: 1.7;
     color: var(--ink);
     background-color: var(--bg);
-    /* faint graph-paper dots */
-    background-image: radial-gradient(
-      color-mix(in srgb, var(--line) 70%, transparent) 1px,
-      transparent 1.2px
-    );
-    background-size: 24px 24px;
     -webkit-font-smoothing: antialiased;
   }
 
@@ -162,6 +173,7 @@
   h2,
   h3,
   h4 {
+    font-family: var(--font-display);
     line-height: 1.35;
     font-weight: 700;
     text-wrap: balance;

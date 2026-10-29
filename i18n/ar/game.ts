@@ -153,6 +153,10 @@ export const game = {
 
   // home
   homeHeroKicker: 'لعبة التقدير اليومية',
+  landedLabel: 'نتيجتك',
+  homeHeadline: 'خمّن رقماً.',
+  homeHeadlineAccent: 'مدروساً',
+  issueNumber: 'العدد {n}',
   homeSections: {
     fermiTitle: 'ما هو سؤال فيرمي؟',
     fermiP1:
@@ -162,6 +166,9 @@ export const game = {
     suggestTitle: 'اقترح سؤالاً',
     suggestBody: 'عندك سؤال فضولي له رقم يمكن التحقق منه؟ أرسله لنا وقد يصبح لغز الغد.',
     suggestCta: 'اقترح سؤالاً',
+    feedbackTitle: 'رأيك يهمنا',
+    feedbackBody: 'أعجبتك اللعبة؟ أزعجك شيء؟ عندك فكرة؟ أخبرنا وساعدنا نحسّنها.',
+    feedbackCta: 'شاركنا رأيك',
     faqTitle: 'الأسئلة الشائعة',
   },
   faq: [

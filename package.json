@@ -16,7 +16,8 @@
     "db:stop": "supabase stop",
     "db:reset": "supabase db reset",
     "import": "tsx scripts/import-questions.ts",
-    "stats": "tsx scripts/stats.ts"
+    "stats": "tsx scripts/stats.ts",
+    "admin": "tsx scripts/admin.ts"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.118.0",

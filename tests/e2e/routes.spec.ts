@@ -1,6 +1,6 @@
 import { test, expect, newPlayer } from './helpers';
 
-const ROUTES = ['/', '/play', '/play/1', '/leaderboard', '/groups', '/profile', '/settings', '/archive', '/submit'];
+const ROUTES = ['/', '/play', '/play/1', '/leaderboard', '/groups', '/profile', '/settings', '/archive', '/submit', '/feedback'];
 
 for (const route of ROUTES) {
   test(`route ${route} renders without console errors`, async ({ browser }) => {
