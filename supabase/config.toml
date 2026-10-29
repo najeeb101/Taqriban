@@ -414,3 +414,27 @@ enabled = true
 # formatted with uppercase keywords, indent 2, max width 180, trailing commas,
 # and column/key alignment. Set to "null" to emit raw, unformatted SQL.
 # format_options = "{\"keywordCase\":\"upper\",\"indent\":2,\"maxWidth\":180,\"commaStyle\":\"trailing\"}"
+
+# ---------------------------------------------------------------- production (Supabase Cloud, Mumbai)
+# `npx supabase config push --project-ref ieehrcxumkibarjsqvbp` applies the settings above with these overrides.
+[remotes.production]
+project_id = "ieehrcxumkibarjsqvbp"
+
+[remotes.production.auth]
+site_url = "https://taqriban.vercel.app"
+additional_redirect_urls = ["https://taqriban.vercel.app", "https://taqriban.vercel.app/settings", "https://taqriban.vercel.app/admin"]
+
+[remotes.production.auth.rate_limit]
+# Cloud limits (the built-in mailer allows only a few emails per hour until custom SMTP is set up).
+email_sent = 2
+sms_sent = 30
+anonymous_users = 30
+token_refresh = 150
+sign_in_sign_ups = 30
+token_verifications = 30
+web3 = 30
+
+[remotes.production.auth.email]
+enable_confirmations = true
+max_frequency = "1m0s"
+otp_length = 8
