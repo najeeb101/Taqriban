@@ -189,6 +189,7 @@ export function HomeHero() {
             score={results.score}
             topPct={results.top_pct}
             rows={rows.map((r) => ({ multiple: r.multiple, direction: r.direction }))}
+            isDaily={results.is_daily}
           />
         ) : null}
         <ButtonLink href="/play" variant="secondary" fullWidth>

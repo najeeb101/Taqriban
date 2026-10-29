@@ -28,8 +28,18 @@ const marhey = Marhey({
 });
 
 export const metadata: Metadata = {
+  // Absolute base for the og:image URL (app/opengraph-image.png) in link previews.
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL?.trim() || 'https://taqriban.vercel.app'),
   title: t.common.title,
   description: t.common.tagline,
+  openGraph: {
+    type: 'website',
+    locale: 'ar',
+    siteName: t.common.appName,
+    title: t.common.title,
+    description: t.common.tagline,
+  },
+  twitter: { card: 'summary_large_image', title: t.common.title, description: t.common.tagline },
   manifest: '/manifest.webmanifest',
   applicationName: t.common.appName,
   appleWebApp: { capable: true, title: t.common.appName, statusBarStyle: 'default' },

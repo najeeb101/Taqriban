@@ -1,12 +1,15 @@
 'use client';
-// ShareButtons — «شارك نتيجتك» (Web Share API with shareText, else copy), «انسخ النص», «صورة النتيجة» (html-to-image card).
-// Props: puzzleNo, score, topPct (number | null), rows ({multiple, direction}[] in question order), className?.
+// ShareButtons — Wordle-style text sharing: a preview of the exact share text, one «شارك نتيجتك» button
+// (phone share sheet on touch devices, clipboard elsewhere), and a quieter «صورة النتيجة» (html-to-image card).
+// Props: puzzleNo, score, topPct (number | null), rows ({multiple, direction}[] in question order), isDaily, className?.
+// The streak line comes from the player's profile and is only added for today's puzzle.
 // The 1080x1350 card is mounted off-screen; the PNG is shared as a file when navigator.canShare({files}) allows, else downloaded.
 import { useRef, useState } from 'react';
 import { Button } from '@/components/ui/Button';
 import { Icon } from '@/components/ui/Icon';
 import { cn } from '@/components/ui/cn';
 import { useToast } from '@/components/ui/Toast';
+import { usePlayer } from '@/components/providers/PlayerProvider';
 import { usePrefs } from '@/components/providers/PrefsProvider';
 import { track } from '@/lib/analytics';
 import { fmt, t } from '@/lib/i18n';
@@ -43,41 +46,47 @@ async function copyToClipboard(text: string): Promise<boolean> {
 
 const isAbort = (e: unknown) => (e as { name?: string } | null)?.name === 'AbortError';
 
+// Desktop browsers also expose navigator.share, but like Wordle we only open the share sheet on phones/tablets.
+const opensShareSheet = () =>
+  typeof navigator !== 'undefined' &&
+  typeof navigator.share === 'function' &&
+  typeof window.matchMedia === 'function' &&
+  window.matchMedia('(pointer: coarse)').matches;
+
 export function ShareButtons({
   puzzleNo,
   score,
   topPct,
   rows,
+  isDaily,
   className,
 }: {
   puzzleNo: number;
   score: number;
   topPct: number | null;
   rows: { multiple: number; direction: Direction }[];
+  isDaily: boolean;
   className?: string;
 }) {
   const { digitStyle } = usePrefs();
+  const { profile } = usePlayer();
   const { toast } = useToast();
   const cardRef = useRef<HTMLDivElement>(null);
   const [busy, setBusy] = useState(false);
 
-  const text = () => shareText({ puzzleNo, score, topPct, rows, url: siteUrl(), digits: digitStyle });
+  const streak = isDaily ? profile?.current_streak : undefined;
+  const text = shareText({ puzzleNo, score, topPct, streak, rows, url: siteUrl(), digits: digitStyle });
 
-  async function copyText(silent = false) {
-    const ok = await copyToClipboard(text());
-    if (ok) {
-      if (!silent) toast(t.game.shareTextCopied, { tone: 'success' });
-    } else {
-      toast(t.game.shareCopyFailed, { tone: 'error' });
-    }
-    return ok;
+  async function copyText() {
+    const ok = await copyToClipboard(text);
+    toast(ok ? t.game.shareTextCopied : t.game.shareCopyFailed, { tone: ok ? 'success' : 'error' });
   }
 
   async function onShare() {
     track('share', { kind: 'text' });
-    if (typeof navigator !== 'undefined' && typeof navigator.share === 'function') {
+    if (opensShareSheet()) {
       try {
-        await navigator.share({ text: text() });
+        await navigator.share({ text });
         return;
       } catch (e) {
         if (isAbort(e)) return;
@@ -124,17 +133,19 @@ export function ShareButtons({
 
   return (
     <div className={cn('flex flex-col gap-3', className)}>
+      <pre
+        dir="rtl"
+        aria-label={t.game.sharePreview}
+        className="m-0 whitespace-pre-wrap break-words rounded-xl border border-line bg-bg px-4 py-3 text-start font-sans text-sm leading-relaxed text-ink select-all"
+      >
+        {text}
+      </pre>
       <Button size="lg" fullWidth icon={<Icon name="share" />} onClick={onShare}>
         {t.game.share}
       </Button>
-      <div className="grid grid-cols-2 gap-3">
-        <Button variant="secondary" icon={<Icon name="copy" />} onClick={() => void copyText()}>
-          {t.game.copyText}
-        </Button>
-        <Button variant="secondary" icon={<Icon name="download" />} loading={busy} onClick={onImage}>
-          {busy ? t.game.shareImageBusy : t.game.shareImage}
-        </Button>
-      </div>
+      <Button variant="ghost" size="sm" icon={<Icon name="download" />} loading={busy} onClick={onImage}>
+        {busy ? t.game.shareImageBusy : t.game.shareImage}
+      </Button>
       {/* Off-screen render target for the PNG */}
       <div aria-hidden="true" style={{ position: 'fixed', top: 0, left: -20000, pointerEvents: 'none' }}>
         <ShareCard

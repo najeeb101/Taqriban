@@ -21,7 +21,7 @@ export const game = {
   dailyScore: 'نتيجة اليوم',
   topPct: 'أفضل {p}',
   share: 'شارك نتيجتك',
-  copyText: 'انسخ النص',
+  sharePreview: 'نص المشاركة',
   nextPuzzleIn: 'اللغز القادم بعد {t}',
   notEnough: 'لا يوجد عدد كافٍ من اللاعبين بعد',
   invalidGuess: 'أدخل رقماً أكبر من صفر',

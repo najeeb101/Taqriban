@@ -53,4 +53,14 @@ describe('shareText', () => {
     expect(txt).toContain('٩٢%');
     expect(txt).toContain('🟩 🎯 ١٫٠٠×');
   });
+
+  it('adds a streak line from 2 days up, with Arabic number agreement', () => {
+    expect(shareText({ ...base, streak: 1 })).not.toContain('🔥');
+    const lines = shareText({ ...base, streak: 2 }).split('\n');
+    expect(lines).toHaveLength(7);
+    expect(lines[2]).toBe(RLM + '🔥 سلسلة يومين');
+    expect(shareText({ ...base, streak: 5 })).toContain('🔥 سلسلة 5 أيام');
+    expect(shareText({ ...base, streak: 12 })).toContain('🔥 سلسلة 12 يوماً');
+    expect(shareText({ ...base, streak: 7, digits: 'arab' })).toContain('🔥 سلسلة ٧ أيام');
+  });
 });

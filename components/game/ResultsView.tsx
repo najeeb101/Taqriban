@@ -111,7 +111,7 @@ export function ResultsView({
         </ol>
       </Card>
 
-      <ShareButtons puzzleNo={results.number} score={results.score} topPct={results.top_pct} rows={shareRows} />
+      <ShareButtons puzzleNo={results.number} score={results.score} topPct={results.top_pct} rows={shareRows} isDaily={results.is_daily} />
 
       <div className="grid grid-cols-2 gap-3">
         <ButtonLink href="/leaderboard" variant="secondary">

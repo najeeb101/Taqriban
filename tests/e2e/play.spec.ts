@@ -66,7 +66,7 @@ test('fresh visitor plays today end-to-end (no answer leaks, resume, reveal, res
   await expect(page.getByText('تفاصيل أسئلتك')).toBeVisible();
 
   // copy text
-  await page.getByRole('button', { name: 'انسخ النص' }).click();
+  await page.getByRole('button', { name: 'شارك نتيجتك' }).click();
   await expect(page.getByText('تم نسخ النص')).toBeVisible();
   const clip = toAscii(await page.evaluate(() => navigator.clipboard.readText()));
   const lines = clip.split('\n');
