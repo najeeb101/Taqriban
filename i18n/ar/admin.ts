@@ -18,8 +18,9 @@ export const admin = {
   },
 
   kpi: {
-    players_total: 'كل اللاعبين',
-    players_new_7d: 'لاعبون جدد (٧ أيام)',
+    players_total: 'الزوار',
+    players_played: 'لعبوا مرة على الأقل',
+    players_new_7d: 'زوار جدد (٧ أيام)',
     active_today: 'لعبوا اليوم',
     active_7d: 'نشطون (٧ أيام)',
     returning_7d: 'عادوا يومين أو أكثر',
@@ -32,6 +33,8 @@ export const admin = {
     submissions_new: 'اقتراحات جديدة',
   },
   returningHint: 'من {n} لاعباً نشطاً',
+  visitorsHint: 'كل متصفح جديد يفتح الموقع يُحسب زائراً',
+  playedHint: 'من {n} زائراً',
 
   activityTitle: 'اللاعبون النشطون يومياً',
   activityCaption: 'آخر ١٤ يوماً (بتوقيت الدوحة). مرّر على العمود لرؤية التفاصيل.',

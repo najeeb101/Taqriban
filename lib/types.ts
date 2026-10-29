@@ -99,7 +99,7 @@ export type SubmissionStatus = 'new' | 'reviewing' | 'accepted' | 'rejected' | '
 export interface AdminDashboard {
   today: string;
   kpis: {
-    players_total: number; players_new_7d: number; players_with_email: number;
+    players_total: number; players_played: number; players_new_7d: number; players_with_email: number;
     active_today: number; active_7d: number; returning_7d: number; completions_today: number;
     avg_score_7d: number | null; guesses_total: number; groups_total: number;
     feedback_new: number; feedback_total: number; feedback_avg_rating: number | null; submissions_new: number;

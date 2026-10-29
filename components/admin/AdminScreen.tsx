@@ -194,13 +194,18 @@ function Overview({ data, digits }: { data: AdminDashboard; digits: DigitStyle }
           value={n(k.returning_7d)}
           hint={fmt(A.returningHint, { n: formatNumber(k.active_7d, digits) })}
         />
-        <Tile label={A.kpi.players_total} value={n(k.players_total)} />
+        <Tile
+          label={A.kpi.players_played}
+          value={n(k.players_played)}
+          hint={fmt(A.playedHint, { n: formatNumber(k.players_total, digits) })}
+        />
+        <Tile label={A.kpi.players_total} value={n(k.players_total)} hint={A.visitorsHint} />
         <Tile label={A.kpi.players_new_7d} value={n(k.players_new_7d)} />
+        <Tile label={A.kpi.players_with_email} value={n(k.players_with_email)} />
         <Tile
           label={A.kpi.avg_score_7d}
           value={k.avg_score_7d !== null ? <Num>{formatMultiple(k.avg_score_7d, digits)}</Num> : '–'}
         />
-        <Tile label={A.kpi.players_with_email} value={n(k.players_with_email)} />
         <Tile label={A.kpi.feedback_new} value={n(k.feedback_new)} />
         <Tile
           label={A.kpi.feedback_avg_rating}
@@ -212,9 +217,7 @@ function Overview({ data, digits }: { data: AdminDashboard; digits: DigitStyle }
             )
           }
         />
-        <Tile label={A.kpi.submissions_new} value={n(k.submissions_new)} />
-        <Tile label={A.kpi.groups_total} value={n(k.groups_total)} />
-      </section>
+        <Tile label={A.kpi.submissions_new} value={n(k.submissions_new)} />      </section>
 
       <ActivityChart activity={data.activity} digits={digits} />
 
