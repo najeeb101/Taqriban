@@ -4,7 +4,7 @@ import { t } from '@/lib/i18n';
 
 // Private: not linked from the menu and kept out of search engines. Access is enforced server-side (admin_* RPCs).
 export const metadata: Metadata = {
-  title: `${t.admin.title} — ${t.common.appName}`,
+  title: `${t.common.appName}: ${t.admin.title}`,
   robots: { index: false, follow: false },
 };
 

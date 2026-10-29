@@ -2,7 +2,7 @@
 // Plain object literal; placeholders use {name} and are filled with fmt() from lib/i18n.
 export const common = {
   appName: 'تقريباً',
-  title: 'تقريباً — لعبة التقدير اليومية',
+  title: 'تقريباً: لعبة التقدير اليومية',
   tagline: 'ثلاثة أسئلة مستحيلة. تخمينة واحدة لكل سؤال. الأقرب يفوز.',
   description: 'لعبة يومية لتقدير الأرقام: ثلاثة أسئلة مستحيلة، تخمينة واحدة لكل سؤال، والأقرب يفوز.',
 
