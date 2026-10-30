@@ -1,8 +1,9 @@
 'use client';
-// GroupsScreen — /groups: my groups, create-group form, join-by-code form.
+// GroupsScreen — /groups: my groups, create-group form, join-by-code form. Guests only see a «create an account» card.
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState, type FormEvent } from 'react';
+import { usePlayer } from '@/components/providers/PlayerProvider';
 import { usePrefs } from '@/components/providers/PrefsProvider';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
@@ -16,6 +17,7 @@ import { ApiError, createGroup, getMyGroups, joinGroup } from '@/lib/api';
 import { localizeDigits } from '@/lib/format';
 import { errorMessage, fmt, t } from '@/lib/i18n';
 import type { GroupKind } from '@/lib/types';
+import { AccountRequiredCard } from './AccountSection';
 import { Field, describedBy, inputClasses } from './Field';
 import { useAsync } from './useAsync';
 import { codeFromInput, groupNameLength, isValidGroupName, isValidJoinCode, GROUP_NAME_MAX } from './utils';
@@ -26,6 +28,7 @@ export function GroupsScreen() {
   const router = useRouter();
   const { toast } = useToast();
   const { digitStyle } = usePrefs();
+  const { authState } = usePlayer();
   const groups = useAsync('my-groups', getMyGroups);
 
   const [name, setName] = useState('');
@@ -74,12 +77,36 @@ export function GroupsScreen() {
     }
   }
 
+  const header = (
+    <header className="flex flex-col gap-1">
+      <h1 className="text-3xl">{t.social.groups.title}</h1>
+      <p className="text-muted">{t.social.groups.intro}</p>
+    </header>
+  );
+
+  if (!authState || authState.isAnonymous) {
+    return (
+      <div className="flex flex-col gap-6">
+        {header}
+        {authState ? (
+          <AccountRequiredCard
+            id="groups-account"
+            icon="users"
+            title={t.social.groups.accountTitle}
+            body={t.social.groups.accountBody}
+          />
+        ) : (
+          <div className="flex justify-center py-8">
+            <Spinner size={32} />
+          </div>
+        )}
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col gap-6">
-      <header className="flex flex-col gap-1">
-        <h1 className="text-3xl">{t.social.groups.title}</h1>
-        <p className="text-muted">{t.social.groups.intro}</p>
-      </header>
+      {header}
 
       <section aria-label={t.social.groups.title} className="flex flex-col gap-3">
         {groups.loading ? (

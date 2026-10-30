@@ -12,12 +12,12 @@ import type { LeaderboardScope } from '@/lib/types';
 import { usePlayer } from '@/components/providers/PlayerProvider';
 import { usePrefs } from '@/components/providers/PrefsProvider';
 import { ButtonLink } from '@/components/ui/Button';
-import { Card } from '@/components/ui/Card';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { Icon } from '@/components/ui/Icon';
 import { Spinner } from '@/components/ui/Spinner';
 import { Tabs } from '@/components/ui/Tabs';
+import { AccountRequiredCard } from './AccountSection';
 import { LeaderboardList } from './LeaderboardList';
 import { MIN_DAYS } from './utils';
 import { useAsync } from './useAsync';
@@ -127,20 +127,12 @@ export function LeaderboardPanel({
           <p className="text-sm text-muted">{localizeDigits(note, digitStyle)}</p>
         ) : null}
         {showGuestCard ? (
-          <Card as="section" tone="accent" aria-labelledby={`${idPrefix}-guest-title`} className="flex flex-col gap-3">
-            <div className="flex gap-3">
-              <Icon name="trophy" size={22} className="mt-0.5 shrink-0 text-accent" />
-              <div className="flex flex-col gap-1">
-                <h3 id={`${idPrefix}-guest-title`} className="text-lg">
-                  {t.social.lb.guestTitle}
-                </h3>
-                <p className="text-sm text-muted">{t.social.lb.guestBody}</p>
-              </div>
-            </div>
-            <ButtonLink href="/profile#account" fullWidth>
-              {t.social.lb.guestCta}
-            </ButtonLink>
-          </Card>
+          <AccountRequiredCard
+            id={`${idPrefix}-guest`}
+            icon="trophy"
+            title={t.social.lb.guestTitle}
+            body={t.social.lb.guestBody}
+          />
         ) : null}
         {body}
       </div>

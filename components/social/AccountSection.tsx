@@ -1,11 +1,12 @@
 'use client';
 // Account pieces for /profile. GuestBanner: why to make an account. AccountEmail: the email row of the account card
 // (guest: link email = create account; signed in: email + sign out). SignInCard: guests who already have an account.
+// AccountRequiredCard: shown wherever a feature needs an account (leaderboard ranking, groups); links to the account card.
 import { useState, type FormEvent, type ReactNode } from 'react';
 import { usePlayer } from '@/components/providers/PlayerProvider';
-import { Button } from '@/components/ui/Button';
+import { Button, ButtonLink } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
-import { Icon } from '@/components/ui/Icon';
+import { Icon, type IconName } from '@/components/ui/Icon';
 import { Spinner } from '@/components/ui/Spinner';
 import { useToast } from '@/components/ui/Toast';
 import { cn } from '@/components/ui/cn';
@@ -90,6 +91,35 @@ function EmailForm({
         </>
       )}
     </form>
+  );
+}
+
+export function AccountRequiredCard({
+  id,
+  icon,
+  title,
+  body,
+}: {
+  id: string;
+  icon: IconName;
+  title: string;
+  body: string;
+}) {
+  return (
+    <Card as="section" tone="accent" aria-labelledby={`${id}-title`} className="flex flex-col gap-3">
+      <div className="flex gap-3">
+        <Icon name={icon} size={22} className="mt-0.5 shrink-0 text-accent" />
+        <div className="flex flex-col gap-1">
+          <h2 id={`${id}-title`} className="text-lg">
+            {title}
+          </h2>
+          <p className="text-sm text-muted">{body}</p>
+        </div>
+      </div>
+      <ButtonLink href="/profile#account" fullWidth>
+        {A.createCta}
+      </ButtonLink>
+    </Card>
   );
 }
 

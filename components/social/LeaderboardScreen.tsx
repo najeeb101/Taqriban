@@ -25,7 +25,7 @@ function chipClass(active: boolean) {
 export function LeaderboardScreen() {
   const params = useSearchParams();
   const initialGroup = params.get('group');
-  const { profile } = usePlayer();
+  const { profile, authState } = usePlayer();
   const groups = useAsync('my-groups', getMyGroups);
   const [filter, setFilter] = useState<Filter>(initialGroup ? { kind: 'group', id: initialGroup } : { kind: 'all' });
 
@@ -58,7 +58,7 @@ export function LeaderboardScreen() {
             {t.social.lb.filterUniversity}
           </button>
         ) : null}
-        {(groups.data ?? []).map((g) => (
+        {(authState?.isAnonymous ? [] : (groups.data ?? [])).map((g) => (
           <button
             key={g.id}
             type="button"

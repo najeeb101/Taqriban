@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import {
-  anonClient, cleanupAll, createPuzzle, newUser, ok, playAll, purgeFixtures, puzzleAt, rpc, svc, type FixturePuzzle,
+  anonClient, cleanupAll, createPuzzle, newAccountUser, newUser, ok, playAll, purgeFixtures, puzzleAt, rpc, svc, type FixturePuzzle,
 } from './helpers';
 
 let t: FixturePuzzle;
@@ -137,8 +137,8 @@ describe('9. archive, submissions, delete_my_data', () => {
 
   it('delete_my_data cascades: user, guesses (histogram), groups ownership', async () => {
     const old = await createPuzzle(90040, '2001-06-01');
-    const keeper = await newUser();
-    const leaver = await newUser();
+    const keeper = await newAccountUser(); // groups need an account
+    const leaver = await newAccountUser();
     await playAll(leaver, old, 2);
     await ok(keeper, 'submit_guess', { p_question_id: old.questions[0].id, p_guess: old.questions[0].answer * 3 });
 
