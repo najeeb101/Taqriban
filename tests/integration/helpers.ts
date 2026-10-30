@@ -38,6 +38,20 @@ export async function newUser(): Promise<TestUser> {
   return u;
 }
 
+/** Signs in a player who has an account (confirmed email + password), i.e. not anonymous. */
+export async function newAccountUser(): Promise<TestUser> {
+  const email = `acct-${Date.now()}-${Math.random().toString(36).slice(2, 8)}@test.invalid`;
+  const password = `pw-${Math.random().toString(36).slice(2)}-X1`;
+  const { data: created, error: cErr } = await svc.auth.admin.createUser({ email, password, email_confirm: true });
+  if (cErr || !created.user) throw cErr ?? new Error('createUser failed');
+  const client = createClient(URL, ANON, opts);
+  const { data, error } = await client.auth.signInWithPassword({ email, password });
+  if (error || !data.user) throw error ?? new Error('password sign-in failed');
+  const u = { id: data.user.id, client };
+  users.push(u);
+  return u;
+}
+
 /** Creates N players through the admin API (for seeding data directly via the service role). */
 export async function seedUsers(n: number): Promise<string[]> {
   const ids: string[] = [];

@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import {
-  cleanupAll, newUser, ok, playAll, purgeFixtures, puzzleAt, rpc, svc, type FixturePuzzle, type TestUser,
+  cleanupAll, newAccountUser, newUser, ok, playAll, purgeFixtures, puzzleAt, rpc, svc, type FixturePuzzle, type TestUser,
 } from './helpers';
 
 let t: FixturePuzzle;
@@ -11,6 +11,7 @@ let p1: TestUser;
 let p2: TestUser;
 let p3: TestUser;
 let p4: TestUser;
+let guest: TestUser;
 let groupCode: string;
 let groupId: string;
 
@@ -24,12 +25,15 @@ beforeAll(async () => {
   t = await puzzleAt(0);
   y = await puzzleAt(-1);
   y2 = await puzzleAt(-2);
-  [p1, p2, p3, p4] = [await newUser(), await newUser(), await newUser(), await newUser()];
+  // p1-p3 have accounts (public boards rank account holders only); p4 and guest are anonymous.
+  [p1, p2, p3, p4] = [await newAccountUser(), await newAccountUser(), await newAccountUser(), await newUser()];
+  guest = await newUser();
   await ok(p1, 'update_profile', { p_university: 'qu', p_display_name: 'لاعب أول' });
   await ok(p2, 'update_profile', { p_university: 'hbku', p_display_name: 'لاعب ثان' });
   await ok(p3, 'update_profile', { p_display_name: 'لاعب ثالث' });
   await playAll(p1, t, 1.1);
   await playAll(p2, t, 3);
+  await playAll(guest, t, 1.05);
   await seedResult(p1, y, 1.5);
   await seedResult(p1, y2, 2.0);
   await seedResult(p2, y, 4);
@@ -78,6 +82,26 @@ describe('6. leaderboards', () => {
     expect(e2.streak).toBe(2);
     expect(e1.rank).toBeLessThan(e2.rank);
     expect(s.entries.some((e: any) => e.player_id === p3.id)).toBe(false);
+  });
+
+  it('guests play but are left off public boards (me is null); account holders are ranked', async () => {
+    for (const scope of ['day', 'streak']) {
+      const b = await ok(guest, 'get_leaderboard', { p_scope: scope });
+      expect(b.entries.some((e: any) => e.player_id === guest.id)).toBe(false);
+      expect(b.me).toBeNull();
+    }
+    const b = await ok(p1, 'get_leaderboard', { p_scope: 'day' });
+    expect(b.entries.some((e: any) => e.player_id === guest.id)).toBe(false);
+    expect(b.finishers).toBeGreaterThanOrEqual(3); // finishers still counts everyone
+  });
+
+  it('group boards still list guest members', async () => {
+    const g = await ok(p1, 'create_group', { p_name: 'ضيوف', p_kind: 'friends' });
+    await ok(guest, 'join_group', { p_code: g.join_code });
+    const b = await ok(p1, 'get_leaderboard', { p_scope: 'day', p_group_id: g.id });
+    expect(b.entries.some((e: any) => e.player_id === guest.id)).toBe(true);
+    await ok(guest, 'leave_group', { p_group_id: g.id });
+    await ok(p1, 'leave_group', { p_group_id: g.id });
   });
 
   it('invalid scope -> invalid_input; non-member group -> not_member', async () => {

@@ -2,14 +2,17 @@
 // LeaderboardPanel — scope tabs + fetched ranked list for one filter.
 // Props: groupId?, university?, defaultScope? ('day'), idPrefix? ('lb'), onScopeChange?(scope), className?
 // Handles loading, error+retry, hidden (group spoiler protection), empty states and min-days notes.
+// Public boards list account holders only, so guests get a «create an account to be ranked» card (not in groups).
 // Reuse it anywhere (the group page uses it with `groupId`).
 import { useState } from 'react';
 import { getLeaderboard } from '@/lib/api';
 import { fmt, t } from '@/lib/i18n';
 import { localizeDigits } from '@/lib/format';
 import type { LeaderboardScope } from '@/lib/types';
+import { usePlayer } from '@/components/providers/PlayerProvider';
 import { usePrefs } from '@/components/providers/PrefsProvider';
 import { ButtonLink } from '@/components/ui/Button';
+import { Card } from '@/components/ui/Card';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { Icon } from '@/components/ui/Icon';
@@ -37,6 +40,8 @@ export function LeaderboardPanel({
   className?: string;
 }) {
   const { digitStyle } = usePrefs();
+  const { authState } = usePlayer();
+  const showGuestCard = !groupId && authState?.isAnonymous;
   const [scope, setScope] = useState<LeaderboardScope>(defaultScope);
   const { data, error, loading, reload } = useAsync(`${scope}|${groupId ?? ''}|${university ?? ''}`, () =>
     getLeaderboard(scope, { groupId, university }),
@@ -120,6 +125,22 @@ export function LeaderboardPanel({
       >
         {!loading && !error && data && !data.hidden ? (
           <p className="text-sm text-muted">{localizeDigits(note, digitStyle)}</p>
+        ) : null}
+        {showGuestCard ? (
+          <Card as="section" tone="accent" aria-labelledby={`${idPrefix}-guest-title`} className="flex flex-col gap-3">
+            <div className="flex gap-3">
+              <Icon name="trophy" size={22} className="mt-0.5 shrink-0 text-accent" />
+              <div className="flex flex-col gap-1">
+                <h3 id={`${idPrefix}-guest-title`} className="text-lg">
+                  {t.social.lb.guestTitle}
+                </h3>
+                <p className="text-sm text-muted">{t.social.lb.guestBody}</p>
+              </div>
+            </div>
+            <ButtonLink href="/profile#account" fullWidth>
+              {t.social.lb.guestCta}
+            </ButtonLink>
+          </Card>
         ) : null}
         {body}
       </div>

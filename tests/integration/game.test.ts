@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import {
-  addDays, anonClient, cleanupAll, close, createPuzzle, guess, newUser, ok, playAll, purgeFixtures, puzzleAt,
+  addDays, anonClient, cleanupAll, close, createPuzzle, guess, newAccountUser, newUser, ok, playAll, purgeFixtures, puzzleAt,
   qatarToday, rpc, seedUsers, svc, type FixturePuzzle, type TestUser,
 } from './helpers';
 
@@ -271,7 +271,7 @@ describe('5. archive vs daily, rollover', () => {
 
   it("today's puzzle is daily", async () => {
     const t = await puzzleAt(0);
-    const u = await newUser();
+    const u = await newAccountUser(); // public boards rank account holders only
     await playAll(u, t, 1.5);
     const res = await ok(u, 'get_results', { p_puzzle_id: t.id });
     expect(res.is_daily).toBe(true);
