@@ -40,7 +40,23 @@ const SERVER_CODES = [
   'account_required',
 ] as const;
 
-export type ApiErrorCode = (typeof SERVER_CODES)[number] | 'network' | 'unknown';
+// Supabase Auth error codes (AuthApiError.code) mapped to our own codes.
+const AUTH_CODES: Record<string, string> = {
+  otp_disabled: 'no_account', // sign-in link for an email with no account (shouldCreateUser: false)
+  email_exists: 'email_taken',
+  user_already_exists: 'email_taken',
+  email_address_invalid: 'invalid_email',
+  over_email_send_rate_limit: 'rate_limited',
+  over_request_rate_limit: 'rate_limited',
+};
+
+export type ApiErrorCode =
+  | (typeof SERVER_CODES)[number]
+  | 'no_account'
+  | 'email_taken'
+  | 'invalid_email'
+  | 'network'
+  | 'unknown';
 
 export class ApiError extends Error {
   code: string;
@@ -60,6 +76,8 @@ function toApiError(e: unknown): ApiError {
   if ((SERVER_CODES as readonly string[]).includes(message)) return new ApiError(message, message);
   const name = typeof err?.name === 'string' ? err.name : '';
   const status = typeof err?.status === 'number' ? err.status : null;
+  if (typeof err?.code === 'string' && AUTH_CODES[err.code]) return new ApiError(AUTH_CODES[err.code], message);
+  if (status === 429) return new ApiError('rate_limited', message);
   if (
     status === 0 ||
     /FetchError|RetryableFetch/i.test(name) ||
