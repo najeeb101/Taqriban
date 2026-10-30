@@ -1,5 +1,6 @@
 'use client';
-// ProfileScreen — /profile: stats tiles, personal score distribution, edit display name + university.
+// ProfileScreen — /profile: account card (display name, university, email), stats tiles, personal score distribution.
+// Guests see the account card first, with a nudge to add their email so the streak survives a new browser or device.
 import { useState, type FormEvent, type ReactNode } from 'react';
 import { usePlayer } from '@/components/providers/PlayerProvider';
 import { usePrefs } from '@/components/providers/PrefsProvider';
@@ -17,6 +18,7 @@ import { errorMessage, fmt, t } from '@/lib/i18n';
 import { NAME_MAX, NAME_MIN, sanitizeName } from '@/lib/sanitize';
 import { UNIVERSITIES } from '@/lib/universities';
 import type { Profile } from '@/lib/types';
+import { AccountEmail, GuestBanner, SignInCard } from './AccountSection';
 import { Field, describedBy, inputClasses } from './Field';
 
 function Tile({ label, children, icon }: { label: string; children: ReactNode; icon?: ReactNode }) {
@@ -98,7 +100,7 @@ function EditForm({ profile }: { profile: Profile }) {
   }
 
   return (
-    <Card as="section" aria-labelledby="edit-title">
+    <Card as="section" id="account" aria-labelledby="edit-title" className="flex scroll-mt-20 flex-col gap-4">
       <form onSubmit={onSubmit} noValidate className="flex flex-col gap-4">
         <h2 id="edit-title" className="text-xl">
           {t.social.profilePage.editTitle}
@@ -142,12 +144,15 @@ function EditForm({ profile }: { profile: Profile }) {
           {t.social.profilePage.save}
         </Button>
       </form>
+      <hr className="border-line" />
+      <AccountEmail />
     </Card>
   );
 }
 
 export function ProfileScreen() {
-  const { status, profile, error, refreshProfile } = usePlayer();
+  const { status, profile, error, refreshProfile, authState } = usePlayer();
+  const guest = authState?.isAnonymous ?? true;
   return (
     <div className="flex flex-col gap-6">
       <h1 className="text-3xl">{t.social.profilePage.title}</h1>
@@ -159,6 +164,13 @@ export function ProfileScreen() {
         <ErrorState error={error} message={t.social.profilePage.loadError} onRetry={() => void refreshProfile()} />
       ) : (
         <>
+          {guest ? (
+            <>
+              <GuestBanner />
+              <EditForm key={profile.id} profile={profile} />
+              <SignInCard />
+            </>
+          ) : null}
           <Stats profile={profile} />
           {profile.distribution.length > 0 && profile.games > 0 ? (
             <section aria-labelledby="dist-title" className="flex flex-col gap-3">
@@ -170,7 +182,7 @@ export function ProfileScreen() {
               </Card>
             </section>
           ) : null}
-          <EditForm key={profile.id} profile={profile} />
+          {guest ? null : <EditForm key={profile.id} profile={profile} />}
         </>
       )}
     </div>

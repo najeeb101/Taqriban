@@ -236,7 +236,7 @@ export async function linkEmail(email: string): Promise<void> {
     await ensureSession();
     const { error } = await getSupabase().auth.updateUser(
       { email },
-      { emailRedirectTo: `${location.origin}/settings` },
+      { emailRedirectTo: `${location.origin}/profile` },
     );
     if (error) throw error;
   } catch (e) {
@@ -248,7 +248,7 @@ export async function signInWithEmail(email: string): Promise<void> {
   try {
     const { error } = await getSupabase().auth.signInWithOtp({
       email,
-      options: { emailRedirectTo: `${location.origin}/settings`, shouldCreateUser: false },
+      options: { emailRedirectTo: `${location.origin}/profile`, shouldCreateUser: false },
     });
     if (error) throw error;
   } catch (e) {

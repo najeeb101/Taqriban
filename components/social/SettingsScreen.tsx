@@ -1,22 +1,17 @@
 'use client';
-// SettingsScreen — /settings: digits, theme, reduce motion, account (link / sign in / sign out), privacy, delete my data.
-import { useState, type FormEvent, type ReactNode } from 'react';
-import { usePlayer } from '@/components/providers/PlayerProvider';
+// SettingsScreen — /settings: digits, theme, reduce motion, privacy, delete my data. (Account lives on /profile.)
+import { useState, type ReactNode } from 'react';
 import { usePrefs } from '@/components/providers/PrefsProvider';
 import { Button } from '@/components/ui/Button';
-import { Card } from '@/components/ui/Card';
-import { Icon } from '@/components/ui/Icon';
 import { Num } from '@/components/ui/Num';
-import { Spinner } from '@/components/ui/Spinner';
 import { useToast } from '@/components/ui/Toast';
 import { cn } from '@/components/ui/cn';
-import { ApiError, deleteMyData, linkEmail, signInWithEmail, signOut } from '@/lib/api';
+import { ApiError, deleteMyData } from '@/lib/api';
 import { formatNumber, localizeDigits } from '@/lib/format';
 import { errorMessage, fmt, t } from '@/lib/i18n';
 import type { DigitStyle, ThemePref } from '@/lib/types';
 import { ConfirmSheet } from './ConfirmSheet';
-import { Field, describedBy, inputClasses } from './Field';
-import { isValidEmail } from './utils';
+import { Field, inputClasses } from './Field';
 
 function Choice<V extends string>({
   label,
@@ -54,114 +49,12 @@ function Choice<V extends string>({
   );
 }
 
-function EmailForm({
-  id,
-  title,
-  body,
-  warn,
-  button,
-  sentMessage,
-  action,
-}: {
-  id: string;
-  title: string;
-  body: string;
-  warn?: string;
-  button: string;
-  sentMessage: string;
-  action: (email: string) => Promise<void>;
-}) {
-  const [email, setEmail] = useState('');
-  const [error, setError] = useState<string | null>(null);
-  const [busy, setBusy] = useState(false);
-  const [sent, setSent] = useState(false);
-
-  async function onSubmit(e: FormEvent) {
-    e.preventDefault();
-    if (!isValidEmail(email)) {
-      setError(t.social.settingsPage.emailInvalid);
-      return;
-    }
-    setError(null);
-    setBusy(true);
-    try {
-      await action(email.trim());
-      setSent(true);
-    } catch (err) {
-      setError(errorMessage((err as ApiError).code));
-    } finally {
-      setBusy(false);
-    }
-  }
-
-  return (
-    <Card as="section" aria-labelledby={`${id}-title`}>
-      <form onSubmit={onSubmit} noValidate className="flex flex-col gap-3">
-        <h3 id={`${id}-title`} className="text-lg">
-          {title}
-        </h3>
-        <p className="text-muted">{body}</p>
-        {warn ? (
-          <p className="flex gap-2 rounded-xl border border-tier-yellow/40 bg-tier-yellow/10 p-3 text-sm">
-            <Icon name="alert" size={18} className="mt-1 shrink-0 text-tier-yellow" />
-            <span>{warn}</span>
-          </p>
-        ) : null}
-        {sent ? (
-          <p role="status" className="flex gap-2 rounded-xl border border-tier-green/40 bg-tier-green/10 p-3">
-            <Icon name="check" size={18} className="mt-1 shrink-0 text-tier-green" />
-            <span>{sentMessage}</span>
-          </p>
-        ) : (
-          <>
-            <Field id={`${id}-email`} label={t.social.settingsPage.emailLabel} error={error}>
-              <input
-                id={`${id}-email`}
-                type="email"
-                dir="ltr"
-                inputMode="email"
-                autoComplete="email"
-                className={cn(inputClasses, 'text-start')}
-                value={email}
-                aria-invalid={error ? true : undefined}
-                aria-describedby={describedBy(`${id}-email`, undefined, error)}
-                onChange={(e) => {
-                  setEmail(e.target.value);
-                  if (error) setError(null);
-                }}
-              />
-            </Field>
-            <Button type="submit" variant="secondary" loading={busy} fullWidth>
-              {button}
-            </Button>
-          </>
-        )}
-      </form>
-    </Card>
-  );
-}
-
 export function SettingsScreen() {
   const { digitStyle, setDigitStyle, theme, setTheme, reduceMotion, setReduceMotion } = usePrefs();
-  const { status, authState } = usePlayer();
   const { toast } = useToast();
-  const [signOutOpen, setSignOutOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [typed, setTyped] = useState('');
   const [busy, setBusy] = useState(false);
-
-  async function doSignOut() {
-    setBusy(true);
-    try {
-      await signOut();
-      toast(t.social.settingsPage.signedOut, { tone: 'success' });
-      setSignOutOpen(false);
-    } catch (err) {
-      toast(errorMessage((err as ApiError).code), { tone: 'error' });
-    } finally {
-      setBusy(false);
-    }
-  }
 
   async function doDelete() {
     setBusy(true);
@@ -232,48 +125,6 @@ export function SettingsScreen() {
         </label>
       </section>
 
-      <section aria-labelledby="account-title" className="flex flex-col gap-4">
-        <h2 id="account-title" className="text-xl">
-          {t.social.settingsPage.account}
-        </h2>
-        {status === 'loading' || !authState ? (
-          <div className="flex justify-center py-6">
-            <Spinner />
-          </div>
-        ) : authState.isAnonymous ? (
-          <>
-            <p className="text-muted">{t.social.settingsPage.guestBody}</p>
-            <EmailForm
-              id="link"
-              title={t.social.settingsPage.linkTitle}
-              body={t.social.settingsPage.linkBody}
-              button={t.social.settingsPage.linkButton}
-              sentMessage={t.social.settingsPage.linkSent}
-              action={linkEmail}
-            />
-            <EmailForm
-              id="signin"
-              title={t.social.settingsPage.signInTitle}
-              body={t.social.settingsPage.signInBody}
-              warn={t.social.settingsPage.signInWarn}
-              button={t.social.settingsPage.signInButton}
-              sentMessage={t.social.settingsPage.signInSent}
-              action={signInWithEmail}
-            />
-          </>
-        ) : (
-          <Card className="flex flex-col gap-3">
-            <p className="text-muted">{t.social.settingsPage.signedInAs}</p>
-            <p dir="ltr" className="break-all text-start text-lg font-medium">
-              {authState.email}
-            </p>
-            <Button variant="secondary" fullWidth onClick={() => setSignOutOpen(true)}>
-              {t.social.settingsPage.signOutButton}
-            </Button>
-          </Card>
-        )}
-      </section>
-
       <section aria-labelledby="privacy-title" className="flex flex-col gap-2">
         <h2 id="privacy-title" className="text-xl">
           {t.social.settingsPage.privacyTitle}
@@ -298,16 +149,6 @@ export function SettingsScreen() {
           {t.social.settingsPage.deleteButton}
         </Button>
       </section>
-
-      <ConfirmSheet
-        open={signOutOpen}
-        onClose={() => !busy && setSignOutOpen(false)}
-        title={t.social.settingsPage.signOutTitle}
-        body={<p>{t.social.settingsPage.signOutBody}</p>}
-        confirmLabel={t.social.settingsPage.signOutConfirm}
-        loading={busy}
-        onConfirm={doSignOut}
-      />
 
       <ConfirmSheet
         open={deleteOpen}
