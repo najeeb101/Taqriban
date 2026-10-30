@@ -117,20 +117,20 @@ export function ResultsView({
       <ShareButtons puzzleNo={results.number} score={results.score} topPct={results.top_pct} rows={shareRows} isDaily={results.is_daily} />
 
       {authState?.isAnonymous ? (
-        <section aria-labelledby="save-streak-title" className="flex flex-col gap-4 rounded-3xl bg-hero p-5 text-hero-ink shadow-card">
+        <Card as="section" tone="accent" aria-labelledby="save-streak-title" className="flex flex-col gap-3">
           <div className="flex gap-3">
-            <Icon name="flame" size={22} filled className="mt-0.5 shrink-0" />
+            <Icon name="flame" size={22} filled className="mt-0.5 shrink-0 text-accent" />
             <div className="flex flex-col gap-1">
               <h3 id="save-streak-title" className="text-lg">
                 {t.game.saveStreakTitle}
               </h3>
-              <p className="text-sm text-hero-ink/80">{t.game.saveStreakBody}</p>
+              <p className="text-sm text-muted">{t.game.saveStreakBody}</p>
             </div>
           </div>
-          <ButtonLink href="/profile#account" variant="onHero" fullWidth>
+          <ButtonLink href="/profile#account" fullWidth>
             {t.game.saveStreakButton}
           </ButtonLink>
-        </section>
+        </Card>
       ) : null}
 
       <div className="grid grid-cols-2 gap-3">
