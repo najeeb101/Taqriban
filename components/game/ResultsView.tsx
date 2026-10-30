@@ -1,12 +1,14 @@
 'use client';
 // ResultsView — the RESULTS stage.
 // Props: results (Results), onReview(index) (open that question's reveal), headingRef?.
-// Big score + tier, «أفضل P%» or not-enough note, ScoreDistribution, per-question rows, share actions, links, countdown.
+// Big score + tier, «أفضل P%» or not-enough note, ScoreDistribution, per-question rows, share actions,
+// guest-only «save your streak» nudge (→ /profile account card), links, countdown.
 import type { Ref } from 'react';
 import { ButtonLink } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { Icon } from '@/components/ui/Icon';
 import { Num } from '@/components/ui/Num';
+import { usePlayer } from '@/components/providers/PlayerProvider';
 import { usePrefs } from '@/components/providers/PrefsProvider';
 import { formatMultiple, formatNumber, localizeDigits } from '@/lib/format';
 import { fmt, t } from '@/lib/i18n';
@@ -28,6 +30,7 @@ export function ResultsView({
   headingRef?: Ref<HTMLHeadingElement>;
 }) {
   const { digitStyle } = usePrefs();
+  const { authState } = usePlayer();
   const rows = [...results.rows].sort((a, b) => a.position - b.position);
   const tr = tier(results.score);
   const shareRows = rows.map((r) => ({ multiple: r.multiple, direction: r.direction }));
@@ -112,6 +115,23 @@ export function ResultsView({
       </Card>
 
       <ShareButtons puzzleNo={results.number} score={results.score} topPct={results.top_pct} rows={shareRows} isDaily={results.is_daily} />
+
+      {authState?.isAnonymous ? (
+        <Card as="section" tone="accent" aria-labelledby="save-streak-title" className="flex flex-col gap-3">
+          <div className="flex gap-3">
+            <Icon name="flame" size={22} filled className="mt-0.5 shrink-0 text-accent" />
+            <div className="flex flex-col gap-1">
+              <h3 id="save-streak-title" className="text-lg">
+                {t.game.saveStreakTitle}
+              </h3>
+              <p className="text-sm text-muted">{t.game.saveStreakBody}</p>
+            </div>
+          </div>
+          <ButtonLink href="/profile#account" variant="secondary" fullWidth>
+            {t.game.saveStreakButton}
+          </ButtonLink>
+        </Card>
+      ) : null}
 
       <div className="grid grid-cols-2 gap-3">
         <ButtonLink href="/leaderboard" variant="secondary">

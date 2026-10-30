@@ -100,7 +100,7 @@ function EditForm({ profile }: { profile: Profile }) {
   }
 
   return (
-    <Card as="section" aria-labelledby="edit-title" className="flex flex-col gap-4">
+    <Card as="section" id="account" aria-labelledby="edit-title" className="flex scroll-mt-20 flex-col gap-4">
       <form onSubmit={onSubmit} noValidate className="flex flex-col gap-4">
         <h2 id="edit-title" className="text-xl">
           {t.social.profilePage.editTitle}
