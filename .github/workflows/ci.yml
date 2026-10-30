@@ -1,0 +1,42 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm run lint
+      - run: npm test
+
+      # Migrations already on the base are immutable. Pushes to main compare against the previous
+      # commit; branches and PRs compare against origin/main.
+      - name: Check migrations
+        env:
+          EVENT: ${{ github.event_name }}
+          REF: ${{ github.ref }}
+          BEFORE: ${{ github.event.before }}
+        run: |
+          base=origin/main
+          if [ "$EVENT" = "push" ] && [ "$REF" = "refs/heads/main" ]; then
+            base="$BEFORE"
+            # first push / force push: no usable previous commit
+            if [ -z "$base" ] || [ "$base" = "0000000000000000000000000000000000000000" ] || ! git cat-file -e "$base^{commit}" 2>/dev/null; then
+              echo "No previous commit to compare against; skipping."
+              exit 0
+            fi
+          fi
+          npm run check:migrations -- --base "$base"

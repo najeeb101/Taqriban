@@ -199,6 +199,23 @@ function Overview({ data, digits }: { data: AdminDashboard; digits: DigitStyle }
           value={n(k.players_played)}
           hint={fmt(A.playedHint, { n: formatNumber(k.players_total, digits) })}
         />
+        <Tile
+          label={A.kpi.conversion}
+          value={
+            k.players_played > 0 ? (
+              <Num>{formatNumber(Math.round(((k.players_played - k.guests_played) / k.players_played) * 100), digits)}%</Num>
+            ) : (
+              '–'
+            )
+          }
+          hint={fmt(A.conversionHint, {
+            a: formatNumber(k.players_played - k.guests_played, digits),
+            n: formatNumber(k.players_played, digits),
+          })}
+        />
+        <Tile label={A.kpi.accounts_new_today} value={n(k.accounts_new_today)} />
+        <Tile label={A.kpi.accounts_new_7d} value={n(k.accounts_new_7d)} />
+        <Tile label={A.kpi.guests_played} value={n(k.guests_played)} hint={A.guestsPlayedHint} />
         <Tile label={A.kpi.players_total} value={n(k.players_total)} hint={A.visitorsHint} />
         <Tile label={A.kpi.players_new_7d} value={n(k.players_new_7d)} />
         <Tile label={A.kpi.players_with_email} value={n(k.players_with_email)} />
@@ -217,7 +234,8 @@ function Overview({ data, digits }: { data: AdminDashboard; digits: DigitStyle }
             )
           }
         />
-        <Tile label={A.kpi.submissions_new} value={n(k.submissions_new)} />      </section>
+        <Tile label={A.kpi.submissions_new} value={n(k.submissions_new)} />
+      </section>
 
       <ActivityChart activity={data.activity} digits={digits} />
 
@@ -270,6 +288,7 @@ function ActivityChart({ activity, digits }: { activity: AdminDashboard['activit
         day: shortDay(d.day, digits),
         active: formatNumber(d.active_players, digits),
         new: formatNumber(d.new_players, digits),
+        acc: formatNumber(d.new_accounts, digits),
         done: formatNumber(d.completions, digits),
       })
     : '';
@@ -297,6 +316,7 @@ function ActivityChart({ activity, digits }: { activity: AdminDashboard['activit
                 day: shortDay(day.day, digits),
                 active: formatNumber(day.active_players, digits),
                 new: formatNumber(day.new_players, digits),
+                acc: formatNumber(day.new_accounts, digits),
                 done: formatNumber(day.completions, digits),
               })}
               onMouseEnter={() => setHover(i)}
@@ -331,6 +351,7 @@ function ActivityChart({ activity, digits }: { activity: AdminDashboard['activit
                 <th className="py-1.5 text-start font-medium">{A.colDay}</th>
                 <th className="py-1.5 text-end font-medium">{A.colActive}</th>
                 <th className="py-1.5 text-end font-medium">{A.colNew}</th>
+                <th className="py-1.5 text-end font-medium">{A.colNewAccounts}</th>
                 <th className="py-1.5 text-end font-medium">{A.colCompletions}</th>
               </tr>
             </thead>
@@ -340,6 +361,7 @@ function ActivityChart({ activity, digits }: { activity: AdminDashboard['activit
                   <td className="py-1.5">{shortDay(day.day, digits)}</td>
                   <td className="py-1.5 text-end">{formatNumber(day.active_players, digits)}</td>
                   <td className="py-1.5 text-end">{formatNumber(day.new_players, digits)}</td>
+                  <td className="py-1.5 text-end">{formatNumber(day.new_accounts, digits)}</td>
                   <td className="py-1.5 text-end">{formatNumber(day.completions, digits)}</td>
                 </tr>
               ))}

@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { test, expect, giveAccount, newPlayer, todaysPuzzle, playThrough, puzzleByDate, svc } from './helpers';
+import { test, expect, giveAccount, newPlayer, todaysPuzzle, qatarToday, playThrough, puzzleByDate, svc } from './helpers';
 
 test('leaderboard tabs, profile edit, settings (digits/theme)', async ({ browser }) => {
   const puzzle = await todaysPuzzle();
@@ -62,13 +62,23 @@ test('leaderboard tabs, profile edit, settings (digits/theme)', async ({ browser
   await ctx.close();
 });
 
-test('archive lists puzzles 1-3; archive play shows banner and is not on the daily leaderboard', async ({ browser }) => {
+test('archive lists every published puzzle up to today; archive play shows banner and is not on the daily leaderboard', async ({ browser }) => {
   const { ctx, page } = await newPlayer(browser);
+  // Derive expectations from the data: non-draft puzzles published up to today (Qatar), as get_archive does.
+  const { data: published } = await svc
+    .from('puzzles')
+    .select('number')
+    .neq('status', 'draft')
+    .lte('publish_date', qatarToday())
+    .order('number');
+  const numbers = (published ?? []).map((r: any) => r.number as number);
+  expect(numbers, 'seed has at least puzzle 1').toContain(1);
   await page.goto('/archive');
-  for (const n of [1, 2, 3]) await expect(page.getByText(`اللغز رقم ${n}`).first()).toBeVisible();
-  await expect(page.getByText('اللغز رقم 4')).toHaveCount(0);
+  for (const n of numbers) await expect(page.getByText(`اللغز رقم ${n}`).first()).toBeVisible();
+  // The next number is not published yet, so it must not be listed.
+  await expect(page.getByText(`اللغز رقم ${Math.max(...numbers) + 1}`, { exact: true })).toHaveCount(0);
 
-  await page.getByRole('link', { name: /اللغز رقم 1/ }).first().click();
+  await page.getByRole('link', { name: /اللغز رقم 1(?!\d)/ }).first().click();
   await expect(page).toHaveURL(/\/play\/1$/);
   await expect(page.getByText('لعب من الأرشيف — لا يُحتسب في المتصدرين')).toBeVisible();
   const { data: p1 } = await svc.from('puzzles').select('publish_date').eq('number', 1).single();

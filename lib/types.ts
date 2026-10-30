@@ -100,11 +100,12 @@ export interface AdminDashboard {
   today: string;
   kpis: {
     players_total: number; players_played: number; players_new_7d: number; players_with_email: number;
+    accounts_new_today: number; accounts_new_7d: number; guests_played: number;
     active_today: number; active_7d: number; returning_7d: number; completions_today: number;
     avg_score_7d: number | null; guesses_total: number; groups_total: number;
     feedback_new: number; feedback_total: number; feedback_avg_rating: number | null; submissions_new: number;
   };
-  activity: { day: string; new_players: number; active_players: number; completions: number }[]; // oldest first
+  activity: { day: string; new_players: number; active_players: number; completions: number; new_accounts: number }[]; // oldest first
   puzzles: {
     number: number; publish_date: string; players: number; completions: number;
     daily_completions: number; avg_score: number | null;

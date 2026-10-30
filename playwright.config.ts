@@ -6,7 +6,8 @@ try {
   /* env may already be set */
 }
 
-const PORT = 3100;
+// Dedicated e2e port: never the `npm run dev` port (3100), so the suite can't latch onto a stale dev server.
+const PORT = 3200;
 
 export default defineConfig({
   testDir: 'tests/e2e',
@@ -31,9 +32,10 @@ export default defineConfig({
   },
   projects: [{ name: 'mobile-chromium', use: { browserName: 'chromium' } }],
   webServer: {
-    command: 'npm run build && npm run start',
+    command: `npm run build && npx next start -p ${PORT}`,
+    env: { NEXT_PUBLIC_SITE_URL: `http://localhost:${PORT}` },
     url: `http://localhost:${PORT}`,
-    reuseExistingServer: true,
+    reuseExistingServer: false,
     timeout: 300_000,
   },
 });

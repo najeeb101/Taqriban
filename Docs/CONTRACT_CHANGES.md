@@ -25,3 +25,7 @@ Append-only log: agents note here any needed change to frozen contracts (`lib/ty
 - Migration `20261029000004_admin_email_alerts.sql`: triggers on `feedback` and `submissions` email every admin through the Resend API (pg_net). The key is the Vault secret `resend_api_key` (optional `alert_from_email`); without it nothing is sent.
 - Migration `20261030000001_review_bot.sql`: daily AI review of player suggestions (Docs/REVIEW_BOT.md). `submissions.ai_verdict/ai_reason/ai_reviewed_at`, table `question_pool`, token-gated RPCs `bot_context`, `bot_record_review`, `bot_fill_schedule`, `bot_email_admins` (Vault secret `review_bot_token`). `admin_list_submissions` also returns the AI fields (`AdminSubmission` type updated). `scripts/review-bot.mjs` is the routine's CLI; `npm run import` refuses to overwrite puzzles the bot built.
 - `lib/share.ts`: the share text ends with the bare domain (no `https://`).
+
+## 2026-10-30 (tooling)
+- No API/schema change. Migrations on main are immutable (a modified one is silently skipped by supabase db push): npm run check:migrations [-- --base <ref>] (also run in CI) fails on modified/renamed/deleted base migrations and on new ones whose timestamp is not later than the newest on the base. Add a new migration instead.
+- E2E now builds and serves on its own port 3200 and never reuses a running server (npm run dev stays on 3100).
