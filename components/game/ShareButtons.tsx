@@ -3,7 +3,8 @@
 // (phone share sheet on touch devices, clipboard elsewhere), and a quieter «صورة النتيجة» (html-to-image card).
 // Props: puzzleNo, score, topPct (number | null), rows ({multiple, direction}[] in question order), isDaily, className?.
 // The streak line comes from the player's profile and is only added for today's puzzle.
-// The 1080x1350 card is mounted off-screen; the PNG is shared as a file when navigator.canShare({files}) allows, else downloaded.
+// The 1080x1350 card is mounted off-screen; the PNG is shared as a file (with the share text + link) when
+// navigator.canShare({files}) allows, else downloaded and the share text copied so it can be pasted next to the image.
 import { useRef, useState } from 'react';
 import { Button } from '@/components/ui/Button';
 import { Icon } from '@/components/ui/Icon';
@@ -108,9 +109,9 @@ export function ShareButtons({
       const name = fmt(t.game.shareCardFile, { n: puzzleNo });
       const file = new File([blob], name, { type: 'image/png' });
       track('share', { kind: 'image' });
-      if (typeof navigator.canShare === 'function' && navigator.canShare({ files: [file] })) {
+      if (typeof navigator.canShare === 'function' && navigator.canShare({ files: [file], text })) {
         try {
-          await navigator.share({ files: [file] });
+          await navigator.share({ files: [file], text });
           return;
         } catch (e) {
           if (isAbort(e)) return;
@@ -123,7 +124,8 @@ export function ShareButtons({
       a.click();
       a.remove();
       window.setTimeout(() => URL.revokeObjectURL(a.href), 5000);
-      toast(t.game.shareImageSaved, { tone: 'success' });
+      const copied = await copyToClipboard(text);
+      toast(copied ? t.game.shareImageSavedCopied : t.game.shareImageSaved, { tone: 'success' });
     } catch {
       toast(t.game.shareImageError, { tone: 'error' });
     } finally {

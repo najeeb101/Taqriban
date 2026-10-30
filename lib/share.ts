@@ -1,4 +1,5 @@
-// Spoiler-free share text: no answers, no question text. Each line starts with RLM so RTL renders correctly.
+// Spoiler-free share text: no answers, no question text. Each text line starts with RLM so RTL renders correctly;
+// the closing link line is left bare.
 import type { Direction, DigitStyle } from './types';
 import { formatMultiple, localizeDigits } from './format';
 import { squareFor } from './scoring';
@@ -33,7 +34,7 @@ export function shareText(opts: ShareInput): string {
     (better != null && better > 0 ? ` · أفضل من ${localizeDigits(better, style)}% من اللاعبين` : '');
   const rows = opts.rows.map((r) => `${squareFor(r.multiple)} ${ARROW[r.direction]} ${f(r.multiple)}`);
   const streak = opts.streak != null && opts.streak >= 2 ? [streakLine(opts.streak, style)] : [];
-  // Bare domain («taqriban.vercel.app»): chat apps still link it and show the preview card, without the https:// noise.
-  const link = opts.url.replace(/^https?:\/\//, '').replace(/\/$/, '');
-  return [head, line, ...streak, ...rows, link].map((l) => RLM + l).join('\n');
+  // Full https:// link so every app makes it tappable; no RLM on that line, which can stop some apps from detecting it.
+  const link = opts.url.replace(/\/$/, '');
+  return [...[head, line, ...streak, ...rows].map((l) => RLM + l), link].join('\n');
 }

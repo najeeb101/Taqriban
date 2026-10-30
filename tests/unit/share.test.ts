@@ -23,17 +23,18 @@ describe('shareText', () => {
       '🟩 ⬇️ 1.45×',
       '🟨 ⬆️ 2.18×',
       '🟨 ⬇️ 2.30×',
-      'taqriban.example',
     ]
       .map((l) => RLM + l)
+      .concat('https://taqriban.example')
       .join('\n');
     expect(shareText(base)).toBe(expected);
   });
 
-  it('starts every line with RLM and has no answers/questions', () => {
+  it('starts every text line with RLM and ends with the bare link', () => {
     const lines = shareText(base).split('\n');
     expect(lines).toHaveLength(6);
-    for (const l of lines) expect(l.startsWith(RLM)).toBe(true);
+    for (const l of lines.slice(0, -1)) expect(l.startsWith(RLM)).toBe(true);
+    expect(lines.at(-1)).toBe('https://taqriban.example');
   });
 
   it('omits the percentile when unknown', () => {

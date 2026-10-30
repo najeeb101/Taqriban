@@ -140,6 +140,7 @@ export const game = {
   shareImageBusy: 'جارٍ تجهيز الصورة…',
   shareImageError: 'تعذّر إنشاء الصورة. حاول مرة أخرى.',
   shareImageSaved: 'تم تنزيل الصورة',
+  shareImageSavedCopied: 'تم تنزيل الصورة ونسخ النص مع الرابط',
   shareTextCopied: 'تم نسخ النص',
   shareCopyFailed: 'تعذّر النسخ. انسخ النص يدوياً.',
   shareCardFile: 'taqriban-{n}.png',
