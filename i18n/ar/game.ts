@@ -131,8 +131,8 @@ export const game = {
   groupsLink: 'مجموعاتي',
   archivePlayNote: 'هذه نتيجة من الأرشيف ولا تدخل في ترتيب المتصدرين.',
   playersToday: '{n} لاعب أنهوا هذا اللغز',
-  saveStreakTitle: 'احفظ سلسلتك',
-  saveStreakBody: 'أضف اسمك وبريدك حتى لا تخسر سلسلتك إذا غيّرت المتصفح أو الجهاز.',
+  saveStreakTitle: 'احفظ سلسلتك وادخل الترتيب',
+  saveStreakBody: 'أضف اسمك وبريدك لتظهر في الترتيب، ولا تخسر سلسلتك إذا غيّرت المتصفح أو الجهاز.',
   saveStreakButton: 'احفظ سلسلتي',
 
   // share
