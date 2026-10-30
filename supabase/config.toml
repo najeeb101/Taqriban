@@ -161,7 +161,7 @@ site_url = "http://localhost:3100"
 # The public URL that Auth serves on. Defaults to the API external URL with `/auth/v1` appended.
 # external_url = ""
 # A list of *exact* URLs that auth providers are permitted to redirect to post authentication.
-additional_redirect_urls = ["http://localhost:3100", "http://localhost:3100/settings", "http://127.0.0.1:3100", "http://127.0.0.1:3100/settings"]
+additional_redirect_urls = ["http://localhost:3100", "http://localhost:3100/settings", "http://localhost:3100/profile", "http://127.0.0.1:3100", "http://127.0.0.1:3100/settings", "http://127.0.0.1:3100/profile"]
 # How long tokens are valid for, in seconds. Defaults to 3600 (1 hour), maximum 604,800 (1 week).
 jwt_expiry = 3600
 # JWT issuer URL. If not set, defaults to auth.external_url.
@@ -422,7 +422,7 @@ project_id = "ieehrcxumkibarjsqvbp"
 
 [remotes.production.auth]
 site_url = "https://taqriban.vercel.app"
-additional_redirect_urls = ["https://taqriban.vercel.app", "https://taqriban.vercel.app/settings", "https://taqriban.vercel.app/admin"]
+additional_redirect_urls = ["https://taqriban.vercel.app", "https://taqriban.vercel.app/settings", "https://taqriban.vercel.app/profile", "https://taqriban.vercel.app/admin"]
 
 [remotes.production.auth.rate_limit]
 # Cloud limits (the built-in mailer allows only a few emails per hour until custom SMTP is set up).
