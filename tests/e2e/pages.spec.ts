@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { test, expect, newPlayer, todaysPuzzle, playThrough, puzzleByDate, svc } from './helpers';
+import { test, expect, giveAccount, newPlayer, todaysPuzzle, playThrough, puzzleByDate, svc } from './helpers';
 
 test('leaderboard tabs, profile edit, settings (digits/theme)', async ({ browser }) => {
   const puzzle = await todaysPuzzle();
@@ -28,16 +28,7 @@ test('leaderboard tabs, profile edit, settings (digits/theme)', async ({ browser
   await expect(page.getByText('الترتيب لأصحاب الحسابات فقط')).toBeVisible();
   await expect(page.getByRole('tabpanel').getByText(name)).toHaveCount(0);
   // give this player an account (as confirming the email link would), then they are ranked
-  const userId = await page.evaluate(() => {
-    const key = Object.keys(localStorage).find((k) => k.startsWith('sb-') && k.endsWith('-auth-token'));
-    return key ? (JSON.parse(localStorage.getItem(key)!).user.id as string) : null;
-  });
-  expect(userId).toBeTruthy();
-  const { error: linkErr } = await svc.auth.admin.updateUserById(userId!, {
-    email: `e2e-${Date.now()}@test.invalid`,
-    email_confirm: true,
-  });
-  expect(linkErr).toBeNull();
+  await giveAccount(page);
   await page.reload();
 
   // leaderboard tabs

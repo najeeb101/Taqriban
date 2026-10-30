@@ -25,8 +25,8 @@ beforeAll(async () => {
   t = await puzzleAt(0);
   y = await puzzleAt(-1);
   y2 = await puzzleAt(-2);
-  // p1-p3 have accounts (public boards rank account holders only); p4 and guest are anonymous.
-  [p1, p2, p3, p4] = [await newAccountUser(), await newAccountUser(), await newAccountUser(), await newUser()];
+  // p1-p4 have accounts (needed to be ranked on public boards and to use groups); guest is anonymous.
+  [p1, p2, p3, p4] = [await newAccountUser(), await newAccountUser(), await newAccountUser(), await newAccountUser()];
   guest = await newUser();
   await ok(p1, 'update_profile', { p_university: 'qu', p_display_name: 'لاعب أول' });
   await ok(p2, 'update_profile', { p_university: 'hbku', p_display_name: 'لاعب ثان' });
@@ -95,9 +95,20 @@ describe('6. leaderboards', () => {
     expect(b.finishers).toBeGreaterThanOrEqual(3); // finishers still counts everyone
   });
 
-  it('group boards still list guest members', async () => {
+  it('guests cannot create or join groups (account_required)', async () => {
+    expect((await rpc(guest, 'create_group', { p_name: 'مجموعة ضيف', p_kind: 'friends' })).error?.message).toBe(
+      'account_required',
+    );
+    const g = await ok(p1, 'create_group', { p_name: 'للأعضاء', p_kind: 'friends' });
+    expect((await rpc(guest, 'join_group', { p_code: g.join_code })).error?.message).toBe('account_required');
+    expect((await ok(p1, 'get_group', { p_code: g.join_code })).member_count).toBe(1);
+    await ok(p1, 'leave_group', { p_group_id: g.id });
+  });
+
+  it('group boards still list guest members who joined before accounts were required', async () => {
     const g = await ok(p1, 'create_group', { p_name: 'ضيوف', p_kind: 'friends' });
-    await ok(guest, 'join_group', { p_code: g.join_code });
+    const { error } = await svc.from('group_members').insert({ group_id: g.id, player_id: guest.id });
+    if (error) throw error;
     const b = await ok(p1, 'get_leaderboard', { p_scope: 'day', p_group_id: g.id });
     expect(b.entries.some((e: any) => e.player_id === guest.id)).toBe(true);
     await ok(guest, 'leave_group', { p_group_id: g.id });
@@ -138,7 +149,7 @@ describe('7. groups', () => {
   it('create_group validation and rate limit', async () => {
     expect((await rpc(p4, 'create_group', { p_name: 'x', p_kind: 'friends' })).error?.message).toBe('invalid_name');
     expect((await rpc(p4, 'create_group', { p_name: 'اسم جيد', p_kind: 'nope' })).error?.message).toBe('invalid_input');
-    const u = await newUser();
+    const u = await newAccountUser();
     for (let i = 0; i < 10; i++) await ok(u, 'create_group', { p_name: `مجموعة ${i}`, p_kind: 'club' });
     expect((await rpc(u, 'create_group', { p_name: 'زيادة', p_kind: 'club' })).error?.message).toBe('rate_limited');
   });

@@ -90,6 +90,30 @@ export async function newPlayer(browser: import('@playwright/test').Browser): Pr
   return { ctx, page };
 }
 
+/**
+ * Gives the browser's current (anonymous) player an account, as confirming the email link would.
+ * Needs a page that has already loaded the app (so the session exists); reload afterwards.
+ */
+export async function giveAccount(page: Page): Promise<void> {
+  const userId = await page.evaluate(() => {
+    const key = Object.keys(localStorage).find((k) => k.startsWith('sb-') && k.endsWith('-auth-token'));
+    return key ? (JSON.parse(localStorage.getItem(key)!).user.id as string) : null;
+  });
+  expect(userId).toBeTruthy();
+  const { error } = await svc.auth.admin.updateUserById(userId!, {
+    email: `e2e-${Date.now()}-${Math.random().toString(36).slice(2, 8)}@test.invalid`,
+    email_confirm: true,
+  });
+  expect(error).toBeNull();
+  // The saved session still says «anonymous» until it refreshes (the real email link does that); mirror it.
+  await page.evaluate(() => {
+    const key = Object.keys(localStorage).find((k) => k.startsWith('sb-') && k.endsWith('-auth-token'))!;
+    const session = JSON.parse(localStorage.getItem(key)!);
+    session.user.is_anonymous = false;
+    localStorage.setItem(key, JSON.stringify(session));
+  });
+}
+
 /** Types a guess for the current question and locks it. */
 export async function lockGuess(page: Page, text: string) {
   const input = page.locator('input[inputmode="decimal"]');

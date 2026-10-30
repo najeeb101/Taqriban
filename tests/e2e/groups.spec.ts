@@ -1,4 +1,4 @@
-import { test, expect, newPlayer, todaysPuzzle, playThrough } from './helpers';
+import { test, expect, giveAccount, newPlayer, todaysPuzzle, playThrough } from './helpers';
 
 test('groups: create, invite link, join, spoiler protection, leaderboard filter', async ({ browser }) => {
   const puzzle = await todaysPuzzle();
@@ -8,7 +8,12 @@ test('groups: create, invite link, join, spoiler protection, leaderboard filter'
   const A = await newPlayer(browser);
   const B = await newPlayer(browser);
 
-  // names
+  // guests see only a «create an account» card on /groups
+  await A.page.goto('/groups');
+  await expect(A.page.getByText('المجموعات لأصحاب الحسابات فقط')).toBeVisible();
+  await expect(A.page.getByLabel('اسم المجموعة')).toHaveCount(0);
+
+  // names, then both get an account (groups need one)
   for (const [p, n] of [
     [A.page, nameA],
     [B.page, nameB],
@@ -17,6 +22,7 @@ test('groups: create, invite link, join, spoiler protection, leaderboard filter'
     await p.getByLabel('الاسم الظاهر').fill(n);
     await p.getByRole('button', { name: 'حفظ التغييرات' }).click();
     await expect(p.getByText('تم حفظ ملفك')).toBeVisible();
+    await giveAccount(p);
   }
 
   // A finishes today and creates a group

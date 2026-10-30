@@ -37,6 +37,7 @@ const SERVER_CODES = [
   'rate_limited',
   'not_found',
   'forbidden',
+  'account_required',
 ] as const;
 
 export type ApiErrorCode = (typeof SERVER_CODES)[number] | 'network' | 'unknown';

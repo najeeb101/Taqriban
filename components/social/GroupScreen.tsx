@@ -1,9 +1,10 @@
 'use client';
 // GroupScreen — /groups/[code]: join prompt for non-members; invite card, today panel, leaderboard,
-// owner tools and leave for members.
+// owner tools and leave for members. Guests (no account) only see the group name and a «create an account» button.
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 import { useState, useSyncExternalStore } from 'react';
+import { usePlayer } from '@/components/providers/PlayerProvider';
 import { usePrefs } from '@/components/providers/PrefsProvider';
 import { Button, ButtonLink, buttonClasses } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
@@ -44,6 +45,7 @@ const useOrigin = () =>
 type Pending = { kind: 'leave' } | { kind: 'regen' } | { kind: 'remove'; member: GroupMember } | null;
 
 export function GroupScreen() {
+  const { authState } = usePlayer();
   const params = useParams<{ code: string }>();
   const code = normalizeJoinCode(decodeURIComponent(String(params.code ?? '')));
   const { data, error, loading, reload } = useAsync(`group|${code}`, () => getGroup(code));
@@ -66,6 +68,7 @@ export function GroupScreen() {
       />
     );
   }
+  if (!authState || authState.isAnonymous) return <JoinView group={data} code={code} reload={reload} guest />;
   return data.is_member ? (
     <MemberView group={data} urlCode={code} reload={reload} />
   ) : (
@@ -89,7 +92,7 @@ function MemberCount({ n }: { n: number }) {
   );
 }
 
-function JoinView({ group, code, reload }: { group: GroupDetail; code: string; reload: () => void }) {
+function JoinView({ group, code, reload, guest }: { group: GroupDetail; code: string; reload: () => void; guest?: boolean }) {
   const { toast } = useToast();
   const [busy, setBusy] = useState(false);
   async function join() {
@@ -116,10 +119,16 @@ function JoinView({ group, code, reload }: { group: GroupDetail; code: string; r
           <Chip>{t.social.groupKinds[group.kind]}</Chip>
           <MemberCount n={group.member_count} />
         </div>
-        <p className="text-muted">{t.social.group.joinCardBody}</p>
-        <Button size="lg" fullWidth loading={busy} onClick={join}>
-          {t.social.group.joinButton}
-        </Button>
+        <p className="text-muted">{guest ? t.social.groups.joinNeedsAccount : t.social.group.joinCardBody}</p>
+        {guest ? (
+          <ButtonLink href="/profile#account" size="lg" fullWidth>
+            {t.social.accountSection.createCta}
+          </ButtonLink>
+        ) : (
+          <Button size="lg" fullWidth loading={busy} onClick={join}>
+            {t.social.group.joinButton}
+          </Button>
+        )}
       </Card>
     </div>
   );
