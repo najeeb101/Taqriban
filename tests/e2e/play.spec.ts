@@ -1,7 +1,7 @@
 import { test, expect, newPlayer, todaysPuzzle, lockGuess, toAscii, playThrough } from './helpers';
 
 const RLM = '‏';
-const containsNumber = (body: string, n: number) => new RegExp(`(?<![\d.])${String(n).replace('.', '\.')}(?![\d.])`).test(body);
+const containsNumber = (body: string, n: number) => new RegExp(`(?<![\\d.])${String(n).replace('.', '\\.')}(?![\\d.])`).test(body);
 
 test('fresh visitor plays today end-to-end (no answer leaks, resume, reveal, results, share)', async ({ browser }) => {
   const puzzle = await todaysPuzzle();
@@ -38,8 +38,10 @@ test('fresh visitor plays today end-to-end (no answer leaks, resume, reveal, res
   await expect(page.getByText('لا يوجد عدد كافٍ من اللاعبين بعد', { exact: true })).toBeVisible();
   await expect(page.getByRole('img', { name: /توزيع/ }).first()).toBeVisible();
   await page.getByText('حساب على الورقة').click();
-  await expect(page.getByText('طول ضلع القاعدة')).toBeVisible();
-  await expect(page.getByRole('link', { name: /Wikipedia/ })).toBeVisible();
+  // Content-agnostic: today's first napkin-math step (a markdown list item, so without its "1. ") and source link.
+  const firstStep = puzzle.questions[0].explanation.split('\n')[0].replace(/^\s*\d+\.\s*/, '');
+  await expect(page.getByText(firstStep)).toBeVisible();
+  await expect(page.getByRole('link', { name: puzzle.questions[0].sourceName! })).toBeVisible();
   assertNoLeak(1);
   await page.getByRole('button', { name: 'السؤال التالي' }).click();
 
@@ -71,7 +73,9 @@ test('fresh visitor plays today end-to-end (no answer leaks, resume, reveal, res
   const clip = toAscii(await page.evaluate(() => navigator.clipboard.readText()));
   const lines = clip.split('\n');
   expect(lines.length).toBe(6); // head, score, 3 rows, url
-  for (const l of lines) expect(l.startsWith(RLM)).toBe(true);
+  // Every text line starts with RLM; the link line deliberately doesn't, so apps still detect it (lib/share.ts).
+  for (const l of lines.slice(0, -1)) expect(l.startsWith(RLM)).toBe(true);
+  expect(lines[5]).toMatch(/^https?:\/\//);
   expect(lines[0]).toContain(`تقريباً #${puzzle.number}`);
   expect(lines[1]).toContain('النتيجة: 1.59');
   expect(lines[2]).toMatch(/^‏[🟩🟨🟧🟥] ⬆️ 2/u);

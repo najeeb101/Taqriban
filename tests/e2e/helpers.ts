@@ -11,6 +11,8 @@ export interface TodayQuestion {
   position: number;
   answer: number;
   text: string;
+  explanation: string;
+  sourceName: string | null;
 }
 export interface TodayPuzzle {
   id: number;
@@ -27,18 +29,23 @@ export async function puzzleByDate(date: string): Promise<TodayPuzzle> {
   if (error) throw new Error(`no puzzle for ${date}: ${error.message}`);
   const { data: qs } = await svc
     .from('questions')
-    .select('id,position,text_ar,question_answers(answer)')
+    .select('id,position,text_ar,question_answers(answer,explanation_ar,source_name)')
     .eq('puzzle_id', p.id)
     .order('position');
   return {
     id: p.id,
     number: p.number,
-    questions: (qs ?? []).map((q: any) => ({
-      id: q.id,
-      position: q.position,
-      text: q.text_ar,
-      answer: Number(Array.isArray(q.question_answers) ? q.question_answers[0].answer : q.question_answers.answer),
-    })),
+    questions: (qs ?? []).map((q: any) => {
+      const a = Array.isArray(q.question_answers) ? q.question_answers[0] : q.question_answers;
+      return {
+        id: q.id,
+        position: q.position,
+        text: q.text_ar,
+        answer: Number(a.answer),
+        explanation: a.explanation_ar,
+        sourceName: a.source_name,
+      };
+    }),
   };
 }
 export const todaysPuzzle = () => puzzleByDate(qatarToday());
