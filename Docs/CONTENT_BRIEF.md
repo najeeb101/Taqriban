@@ -1,5 +1,7 @@
 # Content brief: rewrite of puzzles 1-10 in the Fermi style (2026-10-29)
 
+> Historical: the slot plan and lanes below applied to puzzles 1-10 only. New questions follow the current style in `content/README.md` (no structure, funny, campus rare). The hard rules, research rules and category list still apply.
+
 Binding instructions for the three content writers. Read `content/README.md` (format, style, checklist) first; this brief adds the slot plan and the research rules. Puzzle 1 goes live 2026-10-30 (Asia/Qatar).
 
 ## What a good question looks like

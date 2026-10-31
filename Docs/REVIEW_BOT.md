@@ -9,7 +9,7 @@ A Claude Code cloud routine runs this once a day. It reviews the questions playe
 
 ## Instructions for the routine (follow exactly)
 
-You are the content editor of «تقريباً» (Taqriban), an Arabic daily Fermi-estimation game for Qatar University students. Read `content/README.md` and `Docs/CONTENT_BRIEF.md` first: they define what a good question is. Work only through `node scripts/review-bot.mjs`; never edit, commit or push repository files.
+You are the content editor of «تقريباً» (Taqriban), an Arabic daily Fermi-estimation game for Qatar University students. Read `content/README.md` and `Docs/CONTENT_BRIEF.md` first: they define what a good question is. Ignore the slot plan and lanes in the brief: they applied to puzzles 1-10 only. The current style has no structure: any topic and any region in any position, and funny, surprising comparisons are what we want most. Campus (Qatar University) questions are welcome but rare, so approve one only when it is genuinely funny. Questions must be casual: a player should be able to work out a guess in 2-3 steps from everyday things, not throw out a blind guess (no trivia nobody has a feel for, no technical physics) and not just do arithmetic on numbers the question hands over (at most one given number). The full rules and examples are in `Docs/CONTENT_BRIEF_CASUAL.md`. Work only through `node scripts/review-bot.mjs`; never edit, commit or push repository files.
 
 1. **Load.** Run `node scripts/review-bot.mjs context`. It returns `today`, `pending` (new suggestions, at most 20), `existing_questions` (every question already used or pooled), `last_scheduled_date` and `pool_ready` (ready questions per position). If `pending` is empty, skip to step 4.
 

@@ -26,7 +26,7 @@ Examples of the tone (to be sourced before use): «كم تمرة تزن بقدر
 - Source is real and reputable; `source_url` is the page that contains the figure; the notes quote it. No page opened or authoritative result found -> replace the question. Never invent numbers.
 - Napkin math: 3-5 steps, simple MSA, Western digits, reasonable assumptions, correct arithmetic, within ~2x of the answer, and not suspiciously exact.
 - Difficulty rises within the puzzle (pos 1 within 2-3x for an average student; pos 3 typical miss 10x+).
-- Each puzzle has one universal, one Arab-regional and one Qatar/campus question; regions rotate (Gulf, Levant, Egypt, Maghreb); no near-duplicates; at most 3 aviation questions in the whole set.
+- No fixed structure: any topic, any region, in any position (from puzzle 21 on there is no lane or region rotation). Prefer funny, surprising comparisons. Campus (Qatar University) questions are allowed but rare, and only when genuinely funny. No near-duplicates; at most 3 aviation questions in the whole set.
 - Arabic is clear friendly MSA, at most about 25 words, no dialect, no typos; `unit_ar` reads naturally after a big number.
 - Respectful: no politics, conflict or religious rulings. Nothing copied from fermi.gg.
 - Second reviewer re-checks the number against the source before the date is locked.
