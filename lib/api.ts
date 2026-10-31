@@ -48,12 +48,14 @@ const AUTH_CODES: Record<string, string> = {
   email_address_invalid: 'invalid_email',
   over_email_send_rate_limit: 'rate_limited',
   over_request_rate_limit: 'rate_limited',
+  identity_already_exists: 'google_taken', // linking a Google account that already belongs to another player
 };
 
 export type ApiErrorCode =
   | (typeof SERVER_CODES)[number]
   | 'no_account'
   | 'email_taken'
+  | 'google_taken'
   | 'invalid_email'
   | 'network'
   | 'unknown';
@@ -273,6 +275,43 @@ export async function signInWithEmail(email: string): Promise<void> {
   } catch (e) {
     throw toApiError(e);
   }
+}
+
+/** Guest -> permanent account via Google; same user id, so all guesses are kept. Redirects away to Google. */
+export async function linkGoogle(): Promise<void> {
+  try {
+    await ensureSession();
+    const { error } = await getSupabase().auth.linkIdentity({
+      provider: 'google',
+      options: { redirectTo: `${location.origin}/profile` },
+    });
+    if (error) throw error;
+  } catch (e) {
+    throw toApiError(e);
+  }
+}
+
+/** Returning player: sign in to an existing Google-linked account (replaces this device's guest progress). */
+export async function signInWithGoogle(): Promise<void> {
+  try {
+    const { error } = await getSupabase().auth.signInWithOAuth({
+      provider: 'google',
+      options: { redirectTo: `${location.origin}/profile` },
+    });
+    if (error) throw error;
+  } catch (e) {
+    throw toApiError(e);
+  }
+}
+
+/** Error an auth redirect came back with (`#error_code=…` or `?error_code=…`), removed from the URL. */
+export function takeAuthRedirectError(): ApiError | null {
+  const hash = new URLSearchParams(location.hash.slice(1));
+  const query = new URLSearchParams(location.search);
+  const code = hash.get('error_code') ?? query.get('error_code');
+  if (!code) return null;
+  history.replaceState(null, '', location.pathname);
+  return toApiError({ code, message: hash.get('error_description') ?? query.get('error_description') ?? code });
 }
 
 export async function signOut(): Promise<void> {
