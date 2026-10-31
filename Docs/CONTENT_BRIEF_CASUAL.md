@@ -20,7 +20,7 @@ Bad (the reasons the old questions are being replaced):
 ## Rules
 - **At most one number given in the question**, and only if the player could not reasonably estimate it. Prefer zero.
 - **Short:** at most ~20 words of clear, friendly MSA. Western digits. No dialect. A little humour is welcome.
-- **Answer:** one positive number ≤ 100,000,000, rounded to 2 significant figures. Everyday unit (`unit_ar`: a count of the thing, ريال قطري, دقيقة/ساعة/يوم/سنة, متر/كيلومتر, كيلوغرام, لتر). Never طن، متر مكعب، نسمة.
+- **Answer:** one positive number ≤ 100,000,000 (no billions), rounded to 2 significant figures (exact counts like 465 stay exact). **Big answers are good**: the owner prefers thousands to tens of millions, so widen the time frame or scale ("in a lifetime", "a whole stadium") rather than ask for a tiny number. Avoid answers under about 100. Everyday unit (`unit_ar`: a count of the thing, ريال قطري, دقيقة/ساعة/يوم/سنة, متر/كيلومتر, كيلوغرام, لتر). Never طن، متر مكعب، نسمة.
 - **Difficulty by position:** `position: 1` easy (difficulty 1-2, most players within 2-3x). `position: 2` medium (difficulty 3). `position: 3` a bit harder (difficulty 4) but still casual: a longer chain, not obscure facts.
 - **Factual and sourced:** every input comes from a real, reputable page you actually opened (WebSearch + WebFetch). Compute the answer from those inputs. Never invent numbers. `source_url` = the page for the most important input; other sources go in the notes.
 - **Napkin math** (`## الحساب على الورقة`): 3-5 numbered steps, simple MSA, friendly rounded numbers, lands within ~2x of the answer.

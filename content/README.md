@@ -14,7 +14,7 @@ A good question is one a player can **build** from things they already have a fe
 
 - **Everyday, playful objects.** Dates, camels, cups of karak, footballs, school buses, phone charges, steps, grains of rice. Funny comparisons are welcome: «how many X would weigh as much as Y», «how many X fit inside Y», «how long would it take to …».
 - **The answer must come from a chain.** Napkin math multiplies a few estimable pieces (size × count × rate). If the only route is "know the official statistic", rewrite the question.
-- **Answer size: hard limit 100,000,000** (the import refuses anything larger). The sweet spot is roughly 100 to 10,000,000.
+- **Answer size: hard limit 100,000,000** (the import refuses anything larger). Big answers are good (thousands to tens of millions); only billions are out. Avoid tiny answers under about 100.
 - **Everyday units.** Count things, money (QAR), time, distance or weight in kg. Avoid tonnes, TWh, TEU, m³ and «نسمة» (the import warns on these).
 - **Still factual.** Each piece of the chain comes from a real source, and the answer is computed from those pieces. The notes show the calculation and cite each source. Never invent numbers.
 - **Funny is fine, rude is not.** Same respect rules as below.
