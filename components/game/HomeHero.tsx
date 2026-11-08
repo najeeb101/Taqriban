@@ -1,13 +1,12 @@
 'use client';
 // HomeHero — top of the home page. Loads today's puzzle and shows one of: loading, error (retry), no-puzzle empty state,
 // "play / continue" hero with progress dots, or the finished state (score, tier, Top %, countdown, share, results link).
-import { useCallback, useEffect, useState } from 'react';
+import { type ReactNode, useCallback, useEffect, useState } from 'react';
 import { ButtonLink } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { Num } from '@/components/ui/Num';
-import { Spinner } from '@/components/ui/Spinner';
 import { usePrefs } from '@/components/providers/PrefsProvider';
 import { getPuzzle, getResults } from '@/lib/api';
 import { formatDateAr, formatMultiple, formatNumber, localizeDigits } from '@/lib/format';
@@ -65,11 +64,25 @@ export function HomeHero() {
   }, [nonce]);
 
   if (state.status === 'loading') {
+    // Same hero as the play state, so the headline paints from the server HTML and nothing below it moves when
+    // the puzzle arrives. Puzzle-specific bits are invisible stand-ins rendered with the real components (same height).
+    const placeholderNo = <Num>{formatNumber(0, digitStyle)}</Num>;
     return (
-      <Card padding="lg" className="flex min-h-56 flex-col items-center justify-center gap-3 text-muted">
-        <Spinner size={30} />
-        <p>{t.game.loadingPuzzle}</p>
-      </Card>
+      <PlayHero
+        busy
+        issue={<span className="invisible">{fmtNode(t.game.issueNumber, { n: placeholderNo })}</span>}
+        dateLine={
+          <div className="invisible" aria-hidden="true">
+            <DateLine>{fmtNode(t.game.puzzleNumber, { n: placeholderNo })}</DateLine>
+          </div>
+        }
+        questionRow={
+          <div className="invisible" aria-hidden="true">
+            <QuestionTabs preview questions={PLACEHOLDER_QUESTIONS} revealedIds={[]} currentIndex={null} />
+          </div>
+        }
+        cta={t.game.play}
+      />
     );
   }
   if (state.status === 'error') {
@@ -100,11 +113,11 @@ export function HomeHero() {
   const done = puzzle.reveals.length;
   const finished = puzzle.daily_score !== null || done >= total;
   const dateLine = (
-    <p className="font-display text-base font-semibold text-hero-ink md:text-lg">
+    <DateLine>
       {fmtNode(t.game.puzzleNumber, { n: <Num>{formatNumber(puzzle.number, digitStyle)}</Num> })}
       {' · '}
       {formatDateAr(puzzle.publish_date, digitStyle)}
-    </p>
+    </DateLine>
   );
   // «س١ [icon]  س٢ [icon]  س٣ [icon]» preview of today's topics; answered ones show a check.
   const questionRow = (
@@ -116,37 +129,17 @@ export function HomeHero() {
     />
   );
   // Flat maroon card: wordmark + issue number on top, then the state-specific content.
-  const heroTop = (
-    <div className="flex w-full items-center justify-between font-display text-xl font-semibold md:text-2xl">
-      <span>{t.common.appName}</span>
-      <span>{fmtNode(t.game.issueNumber, { n: <Num>{formatNumber(puzzle.number, digitStyle)}</Num> })}</span>
-    </div>
-  );
+  const issue = <span>{fmtNode(t.game.issueNumber, { n: <Num>{formatNumber(puzzle.number, digitStyle)}</Num> })}</span>;
+  const heroTop = <HeroTop issue={issue} />;
 
   if (!finished) {
     return (
-      <section className="flex flex-col items-center rounded-[2rem] bg-hero px-6 pt-6 pb-9 text-center text-hero-ink shadow-card md:min-h-[calc(100dvh-7.5rem)] md:justify-between md:rounded-[2.5rem] md:px-12 md:pt-[clamp(1.25rem,4.5dvh,2rem)] md:pb-[clamp(1.25rem,4.5dvh,3rem)]">
-        {heroTop}
-        <div className="mt-10 flex flex-col items-center md:mt-0">
-          <h1 className="font-display text-[3.75rem] leading-[1.1] font-bold md:text-[clamp(2.75rem,9dvh,5rem)]">
-            {t.game.homeHeadline}
-            <span className="mt-1 block -rotate-3 font-script text-[4rem] leading-[1.3] text-sand md:text-[clamp(3rem,9.5dvh,5.25rem)]">
-              {t.game.homeHeadlineAccent}
-            </span>
-          </h1>
-          <p className="mt-4 max-w-[22rem] text-[0.95rem] leading-relaxed text-hero-ink/85 md:mt-[clamp(0.5rem,2dvh,1.5rem)] md:max-w-[30rem] md:text-lg">
-            {t.common.tagline}
-          </p>
-        </div>
-        <div className="mt-6 flex flex-col items-center gap-3 md:mt-0">
-          {dateLine}
-          {questionRow}
-        </div>
-        <ButtonLink href="/play" variant="onHero" size="lg" className="mt-8 px-10 text-xl md:mt-0 md:min-h-[clamp(3.25rem,8dvh,4rem)] md:px-12 md:text-[clamp(1.25rem,3dvh,1.5rem)]">
-          {done > 0 ? t.game.continuePuzzle : t.game.play}
-          <span aria-hidden="true">←</span>
-        </ButtonLink>
-      </section>
+      <PlayHero
+        issue={issue}
+        dateLine={dateLine}
+        questionRow={questionRow}
+        cta={done > 0 ? t.game.continuePuzzle : t.game.play}
+      />
     );
   }
 
@@ -197,5 +190,70 @@ export function HomeHero() {
         </ButtonLink>
       </Card>
     </div>
+  );
+}
+
+// Always three questions a day; categories are unknown until the puzzle loads.
+const PLACEHOLDER_QUESTIONS = [1, 2, 3].map((id) => ({ id: -id, category: null }));
+
+function DateLine({ children }: { children: ReactNode }) {
+  return <p className="font-display text-base font-semibold text-hero-ink md:text-lg">{children}</p>;
+}
+
+// Flat maroon card top row: wordmark + issue number.
+function HeroTop({ issue }: { issue: ReactNode }) {
+  return (
+    <div className="flex w-full items-center justify-between font-display text-xl font-semibold md:text-2xl">
+      <span>{t.common.appName}</span>
+      {issue}
+    </div>
+  );
+}
+
+// "Play / continue" hero, also used (with invisible stand-ins) while today's puzzle loads.
+function PlayHero({
+  issue,
+  dateLine,
+  questionRow,
+  cta,
+  busy = false,
+}: {
+  issue: ReactNode;
+  dateLine: ReactNode;
+  questionRow: ReactNode;
+  cta: ReactNode;
+  busy?: boolean;
+}) {
+  return (
+    <section
+      aria-busy={busy || undefined}
+      className="flex flex-col items-center rounded-[2rem] bg-hero px-6 pt-6 pb-9 text-center text-hero-ink shadow-card md:min-h-[calc(100dvh-7.5rem)] md:justify-between md:rounded-[2.5rem] md:px-12 md:pt-[clamp(1.25rem,4.5dvh,2rem)] md:pb-[clamp(1.25rem,4.5dvh,3rem)]"
+    >
+      <HeroTop issue={issue} />
+      <div className="mt-10 flex flex-col items-center md:mt-0">
+        <h1 className="font-display text-[3.75rem] leading-[1.1] font-bold md:text-[clamp(2.75rem,9dvh,5rem)]">
+          {t.game.homeHeadline}
+          <span className="mt-1 block -rotate-3 font-script text-[4rem] leading-[1.3] text-sand md:text-[clamp(3rem,9.5dvh,5.25rem)]">
+            {t.game.homeHeadlineAccent}
+          </span>
+        </h1>
+        <p className="mt-4 max-w-[22rem] text-[0.95rem] leading-relaxed text-hero-ink/85 md:mt-[clamp(0.5rem,2dvh,1.5rem)] md:max-w-[30rem] md:text-lg">
+          {t.common.tagline}
+        </p>
+      </div>
+      <div className="mt-6 flex flex-col items-center gap-3 md:mt-0">
+        {dateLine}
+        {questionRow}
+      </div>
+      <ButtonLink
+        href="/play"
+        variant="onHero"
+        size="lg"
+        className="mt-8 px-10 text-xl md:mt-0 md:min-h-[clamp(3.25rem,8dvh,4rem)] md:px-12 md:text-[clamp(1.25rem,3dvh,1.5rem)]"
+      >
+        {cta}
+        <span aria-hidden="true">←</span>
+      </ButtonLink>
+    </section>
   );
 }
